@@ -100,8 +100,6 @@ try {
     $titles = rowsStageTwo($pdo, 'SELECT COUNT(DISTINCT title) AS topics FROM posts')[0];
     expectStageTwo((int) $titles['topics'] >= min(25, $options->posts), 'Not enough distinct topics');
     expectStageTwo(max(array_column($categoryCounts, 'posts')) < $options->posts, 'One category contains every post');
-    $tokens = json_decode(file_get_contents($root . '/design/tokens.json'), true, 512, JSON_THROW_ON_ERROR);
-    $palette = array_values($tokens['colors']['tones']);
     $allowed = ['p', 'h2', 'h3', 'ul', 'ol', 'li', 'strong', 'em', 'a', 'blockquote'];
     $posts = rowsStageTwo($pdo, 'SELECT slug, content, image FROM posts ORDER BY slug');
     $imageHashes = [];
@@ -115,14 +113,12 @@ try {
                 'Disallowed article attribute'
             );
         }
-        expectStageTwo(preg_match('~^/uploads/seed/post-[0-9]+\.svg$~D', $post['image']) === 1, 'External image');
+        expectStageTwo(in_array($post['image'], (new SeedImages($root))->urls(), true), 'Image outside library');
         $path = $root . '/public' . $post['image'];
-        expectStageTwo(is_file($path), 'Missing local SVG');
-        $svg = file_get_contents($path);
-        expectStageTwo(!preg_match('/<script|<image|<foreignObject|\shref=|\son[a-z]+=/i', $svg), 'Unsafe SVG');
-        preg_match_all('/fill="(#[0-9a-f]{6})"/i', $svg, $fills);
-        expectStageTwo(count(array_diff($fills[1], $palette)) === 0, 'Image color outside tokens');
-        $imageHashes[$post['image']] = hash('sha256', $svg);
+        expectStageTwo(is_file($path), 'Missing local WebP');
+        $size = getimagesize($path);
+        expectStageTwo($size !== false && $size[0] === 1200 && $size[1] === 800 && $size['mime'] === 'image/webp', 'Invalid WebP');
+        $imageHashes[$post['image']] = hash_file('sha256', $path);
     }
 
     $indexes = rowsStageTwo(
@@ -158,7 +154,7 @@ try {
         // A failed --fresh must roll back its DELETE statements as well as inserts.
         $invalidPost = $content->post(1, $options, $categories);
         $invalidPost['title'] = str_repeat('X', 300);
-        $invalidPost['image'] = '/uploads/seed/post-0001.svg';
+        $invalidPost['image'] = $images->forPost(1);
         $failed = false;
         try {
             $repository->save($categories, [$invalidPost], true);
@@ -166,14 +162,9 @@ try {
             $failed = true;
         }
         expectStageTwo($failed && snapshotStageTwo($pdo) === $modified, 'Failed fresh was not rolled back');
-        file_put_contents($root . '/public/uploads/seed/post-999999999.svg', '<svg/>');
-        file_put_contents($root . '/public/uploads/seed/keep-test.txt', 'preserve');
         $freshOptions = new SeedOptions($options->categories, $options->posts, true, $options->date);
         $seeder->run($freshOptions);
         expectStageTwo(snapshotStageTwo($pdo) === $before, 'Fresh seed is not deterministic');
-        expectStageTwo(!is_file($root . '/public/uploads/seed/post-999999999.svg'), 'Obsolete SVG not removed');
-        expectStageTwo(is_file($root . '/public/uploads/seed/keep-test.txt'), 'Unmanaged file removed');
-        unlink($root . '/public/uploads/seed/keep-test.txt');
 
         $pdo->beginTransaction();
         try {
@@ -187,7 +178,7 @@ try {
         }
         expectStageTwo(snapshotStageTwo($pdo) === $before, 'Cascade probe changed the dataset');
         foreach ($imageHashes as $image => $hash) {
-            expectStageTwo(hash_file('sha256', $root . '/public' . $image) === $hash, 'SVG is not deterministic');
+            expectStageTwo(hash_file('sha256', $root . '/public' . $image) === $hash, 'WebP library changed during seeding');
         }
     }
 
@@ -205,7 +196,7 @@ try {
         'local_images' => count($imageHashes),
         'schema_indexes' => array_values(array_unique(array_column($indexes, 'INDEX_NAME'))),
         'foreign_keys' => $foreignKeys,
-        'exercise' => $exercise ? 'preserve edits, rollback failed fresh, deterministic fresh, SVG cleanup, cascade: OK' : 'not requested',
+        'exercise' => $exercise ? 'preserve edits, rollback failed fresh, deterministic fresh, immutable WebP library, cascade: OK' : 'not requested',
     ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR) . PHP_EOL;
 } catch (Throwable $exception) {
     file_put_contents('php://stderr', 'Stage 2 check failed: ' . $exception->getMessage() . PHP_EOL);

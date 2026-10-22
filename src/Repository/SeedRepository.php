@@ -14,6 +14,37 @@ final class SeedRepository
     }
 
     /**
+     * Replace only image paths, preserving content, relations and view counts.
+     * @param non-empty-list<string> $images
+     */
+    public function refreshImages(array $images): int
+    {
+        if ($images === []) {
+            throw new \InvalidArgumentException('Image library cannot be empty.');
+        }
+        $this->pdo->beginTransaction();
+        try {
+            $statement = $this->pdo->prepare('SELECT id FROM posts ORDER BY id');
+            $statement->execute();
+            $ids = $statement->fetchAll(PDO::FETCH_COLUMN);
+            $update = $this->pdo->prepare('UPDATE posts SET image = :image WHERE id = :id');
+            $changed = 0;
+            foreach ($ids as $index => $id) {
+                $update->execute(['image' => $images[$index % count($images)], 'id' => $id]);
+                $changed += $update->rowCount();
+            }
+            $this->pdo->commit();
+
+            return $changed;
+        } catch (Throwable $exception) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+            throw $exception;
+        }
+    }
+
+    /**
      * @param list<array<string, mixed>> $categories
      * @param list<array<string, mixed>> $posts
      * @return array<string, int>

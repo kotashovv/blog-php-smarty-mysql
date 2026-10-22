@@ -168,7 +168,10 @@ function ids($, selector) {
     page
       .$("img")
       .each((_, e) =>
-        assert.match(page.$(e).attr("src"), /^\/uploads\/seed\//),
+        assert.match(
+          page.$(e).attr("src"),
+          /^\/assets\/images\/editorial\/.*\.webp$/,
+        ),
       );
   }
   const evidence = {

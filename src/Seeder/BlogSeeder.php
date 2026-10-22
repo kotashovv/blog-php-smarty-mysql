@@ -22,13 +22,10 @@ final class BlogSeeder
         $posts = [];
         for ($number = 1; $number <= $options->posts; $number++) {
             $post = $this->content->post($number, $options, $categories);
-            $post['image'] = $this->images->generate($number, $post['title']);
+            $post['image'] = $this->images->forPost($number);
             $posts[] = $post;
         }
         $counts = $this->repository->save($categories, $posts, $options->fresh);
-        if ($options->fresh) {
-            $this->images->removeObsolete($options->posts);
-        }
 
         return $counts;
     }

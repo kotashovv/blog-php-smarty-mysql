@@ -13,28 +13,29 @@ const base = process.env.PREVIEW_URL || "http://127.0.0.1:8080";
       assert.ok(scss.includes(`"${name}": ${color}`), `${name}: palette drift`);
   }
   const results = [];
-  for (let number = 1; number <= 40; number++) {
-    const url = `/uploads/seed/post-${String(number).padStart(4, "0")}.svg`;
+  const files = fs.readdirSync("public/assets/images/editorial");
+  assert.equal(files.length, 10);
+  for (const file of files) {
+    assert.match(file, /\.webp$/);
+    const url = `/assets/images/editorial/${file}`;
     const response = await fetch(base + url);
     assert.equal(response.status, 200, url);
-    assert.match(response.headers.get("content-type"), /image\/svg\+xml/);
-    const svg = await response.text();
-    assert.match(svg, /<svg /);
-    assert.doesNotMatch(
-      svg,
-      /<script|<image|<foreignObject|\shref=|\son[a-z]+=/i,
+    assert.match(response.headers.get("content-type"), /image\/webp/);
+    const bytes = Buffer.from(await response.arrayBuffer());
+    assert.equal(bytes.toString("ascii", 0, 4), "RIFF");
+    assert.equal(bytes.toString("ascii", 8, 12), "WEBP");
+    assert.ok(
+      bytes.equals(fs.readFileSync(`public/assets/images/editorial/${file}`)),
     );
-    results.push({ url, status: response.status });
+    results.push({ url, status: response.status, bytes: bytes.length });
   }
-  const obsolete = await fetch(base + "/uploads/seed/post-0041.svg");
-  assert.equal(obsolete.status, 404, "Old SVG remains after default --fresh");
   fs.mkdirSync("var", { recursive: true });
   fs.writeFileSync(
     "var/stage2-assets.json",
     JSON.stringify(results, null, 2) + "\n",
   );
   console.log(
-    "Seed assets: 40 local SVGs served by nginx; obsolete SVG absent; JSON/SCSS palettes match.",
+    "Seed assets: 10 reusable local WebPs served by nginx with matching bytes and MIME; JSON/SCSS palettes match.",
   );
 })().catch((error) => {
   console.error(error);
