@@ -6,16 +6,16 @@ namespace App\Controller;
 
 use App\Core\Response;
 use App\Core\View;
-use App\Service\DemoContent;
+use App\Service\HomeService;
 
 final class HomeController
 {
-    public function __construct(private readonly View $view, private readonly DemoContent $content)
+    public function __construct(private readonly View $view, private readonly HomeService $content)
     {
     }
 
     public function index(): Response
     {
-        return $this->view->render('home.tpl', $this->content->page('home'));
+        return $this->view->render('home.tpl', $this->content->page());
     }
 }
