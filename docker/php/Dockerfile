@@ -19,6 +19,9 @@ COPY --from=dependencies /app/vendor ./vendor
 COPY --from=dependencies /app/src ./src
 COPY composer.json composer.lock ./
 COPY config ./config
+COPY bin ./bin
+COPY database ./database
+COPY design/tokens.json ./design/tokens.json
 COPY templates ./templates
 COPY public ./public
 COPY tools/fixtures ./tools/fixtures
