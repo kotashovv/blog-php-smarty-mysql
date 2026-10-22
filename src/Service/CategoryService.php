@@ -36,7 +36,7 @@ final class CategoryService
         $url = '/category/' . $category->slug;
 
         return $this->pages->common($category->name, $category->description, [$category], $url) + [
-            'category' => PagePresenter::category($category) + ['totalLabel' => $total . ' статей'],
+            'category' => PagePresenter::category($category) + ['totalLabel' => 'Статей: ' . $total],
             'posts' => $this->presenter->collection($posts, $categories),
             'page' => $page, 'pages' => $pages, 'sort' => $sort, 'baseUrl' => $url,
             'breadcrumbs' => [['label' => 'Главная', 'url' => '/'], ['label' => $category->name, 'url' => $url]],

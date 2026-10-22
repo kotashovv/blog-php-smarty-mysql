@@ -28,7 +28,7 @@ final class PostPresenter
             'datetime' => $date->format('Y-m-d\TH:i:s\Z'),
             'date' => $date->format('d.m.Y'),
             'views' => $post->views + $addedViews,
-            'viewsLabel' => number_format($post->views + $addedViews, 0, ',', ' ') . ' просмотров',
+            'viewsLabel' => 'Просмотры: ' . number_format($post->views + $addedViews, 0, ',', ' '),
             'categories' => array_map(PagePresenter::category(...), $categories),
         ];
     }

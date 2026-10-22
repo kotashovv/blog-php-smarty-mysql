@@ -36,8 +36,10 @@ final class HomeService
             ];
         }
         $newest = array_values($unique);
-        usort($newest, static fn (Post $a, Post $b): int =>
-            strcmp($b->publishedAt, $a->publishedAt) ?: $b->id <=> $a->id);
+        usort(
+            $newest,
+            static fn (Post $a, Post $b): int => strcmp($b->publishedAt, $a->publishedAt) ?: $b->id <=> $a->id
+        );
         $hero = $newest === [] ? null : $this->presenter->present($newest[0], $postCategories[$newest[0]->id] ?? []);
 
         return $this->pages->common('Статьи о цифровых системах', 'Архитектура, дизайн и инженерная практика.', $categories, '/') + [
