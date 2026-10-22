@@ -1,0 +1,35 @@
+@mixin enter($name, $duration: var(--motion-enter)) {
+  animation: $name $duration var(--ease-mech) backwards;
+}
+
+@mixin cascade {
+  @for $step from 1 through 6 {
+    &:nth-child(#{$step}) {
+      animation-delay: calc(#{$step - 1} * var(--stagger));
+    }
+  }
+  &:nth-child(n + 7) {
+    animation-delay: calc(6 * var(--stagger));
+  }
+}
+
+@mixin hover {
+  @media (hover: hover) and (pointer: fine) {
+    @content;
+  }
+}
+
+@mixin fill-panel {
+  position: relative;
+  isolation: isolate;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--motion-fill, var(--tone-lime));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--motion-fast) var(--ease-mech);
+  }
+}

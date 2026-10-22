@@ -4,6 +4,8 @@
 @use "spacing";
 @use "chamfer";
 @use "breakpoints";
+@use "motion";
+@use "../mixins/breakpoints" as bp;
 :root {
   --color-bg: #{colors.$bg};
   --color-ink: #{colors.$ink};
@@ -43,4 +45,19 @@
   --chamfer-mobile: #{chamfer.$mobile};
   --container: #{breakpoints.$container};
   --article-measure: #{breakpoints.$article};
+  --ease-mech: #{motion.$ease-mech};
+  --ease-dock: #{motion.$ease-dock};
+  --motion-enter: #{motion.$enter};
+  --motion-panel: #{motion.$panel};
+  --motion-fast: #{motion.$fast};
+  --stagger: #{motion.$stagger};
+  --travel: #{motion.$travel-mobile};
+  --latch: #{motion.$latch};
+  --motion-lift: #{motion.$lift};
+  --label-travel: #{motion.$label-travel};
+  --arrow-travel: #{motion.$arrow-travel};
+  --image-scale: #{motion.$image-scale};
+  @include bp.up(tablet) {
+    --travel: #{motion.$travel};
+  }
 }
