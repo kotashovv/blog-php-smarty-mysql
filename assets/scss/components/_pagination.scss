@@ -19,10 +19,6 @@
       color: var(--tone-white);
       background: var(--color-ink);
     }
-    &:hover {
-      background: var(--tone-blue);
-      color: var(--color-ink);
-    }
     &:focus-visible {
       outline: none;
       text-decoration: underline;

@@ -1,5 +1,5 @@
 <article class="card card--{$tone}{if $variant == 'large'} card--large{/if}{if !empty($post.image)} card--photo{/if}{if !empty($editorial)} card--editorial{/if}">
-  {if !empty($post.image)}<img class="card__image" src="{$post.image.src}" alt="{$post.image.alt}" loading="lazy" width="{$post.image.width}" height="{$post.image.height}">{/if}
+  {if !empty($post.image)}<a class="card__media" href="{$post.url}" aria-label="{$post.title}"><img class="card__image" src="{$post.image.src}" alt="{$post.image.alt}" loading="lazy" width="{$post.image.width}" height="{$post.image.height}"></a>{/if}
   <div class="card__body">
     <div class="card__top"><span class="label">{$post.label}</span><span>{$post.stat}</span></div>
     <div class="card__copy"><h3 class="card__title"><a href="{$post.url}">{$post.title}</a></h3>{if !empty($post.excerpt)}<p class="card__excerpt">{$post.excerpt}</p>{/if}</div>

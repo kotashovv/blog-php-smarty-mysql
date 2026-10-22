@@ -9,9 +9,6 @@
     background: var(--tone-white);
     font-size: var(--font-label);
     text-transform: uppercase;
-    &:hover {
-      background: var(--tone-blue);
-    }
     &--active {
       background: var(--color-ink);
       color: var(--tone-white);

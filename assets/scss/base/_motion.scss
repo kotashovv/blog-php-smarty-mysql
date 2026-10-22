@@ -2,48 +2,117 @@
 
 // The resting page is fully visible. Only opted-in keyframes hide content.
 @keyframes mech-left {
-  0% { opacity: 0; transform: translateX(calc(-1 * var(--travel))); }
-  82% { opacity: 1; transform: translateX(var(--latch)); animation-timing-function: var(--ease-dock); }
-  100% { opacity: 1; transform: none; }
+  0% {
+    opacity: 0;
+    transform: translateX(calc(-1 * var(--travel)));
+  }
+  82% {
+    opacity: 1;
+    transform: translateX(var(--latch));
+    animation-timing-function: var(--ease-dock);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
 }
 @keyframes mech-right {
-  0% { opacity: 0; transform: translateX(var(--travel)); }
-  82% { opacity: 1; transform: translateX(calc(-1 * var(--latch))); animation-timing-function: var(--ease-dock); }
-  100% { opacity: 1; transform: none; }
+  0% {
+    opacity: 0;
+    transform: translateX(var(--travel));
+  }
+  82% {
+    opacity: 1;
+    transform: translateX(calc(-1 * var(--latch)));
+    animation-timing-function: var(--ease-dock);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
 }
 @keyframes mech-dock {
-  0% { opacity: 0; transform: translateY(var(--travel)); }
-  82% { opacity: 1; transform: translateY(calc(-1 * var(--latch))); animation-timing-function: var(--ease-dock); }
-  100% { opacity: 1; transform: none; }
+  0% {
+    opacity: 0;
+    transform: translateY(var(--travel));
+  }
+  82% {
+    opacity: 1;
+    transform: translateY(calc(-1 * var(--latch)));
+    animation-timing-function: var(--ease-dock);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
 }
 @keyframes mech-title {
-  from { clip-path: inset(0 100% 0 0); }
-  to { clip-path: inset(0); }
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
 }
 @keyframes mech-header {
-  from { transform: translateY(-100%); }
-  to { transform: none; }
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: none;
+  }
 }
 @keyframes mech-panel {
-  from { clip-path: inset(0 0 100% 0); }
-  to { clip-path: inset(0); }
+  from {
+    clip-path: inset(0 0 100% 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
 }
 @keyframes mech-page-out {
-  from { opacity: 1; transform: none; }
-  to { opacity: 0; transform: translateX(calc(-1 * var(--travel))); }
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateX(calc(-1 * var(--travel)));
+  }
 }
 @keyframes mech-page-in {
-  from { opacity: 0; transform: translateX(var(--travel)); }
-  to { opacity: 1; transform: none; }
+  from {
+    opacity: 0;
+    transform: translateX(var(--travel));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .header { @include motion.enter(mech-header, var(--motion-panel)); }
-  .hero-photo { @include motion.enter(mech-left); }
-  .hero-panel, .category__hero { @include motion.enter(mech-right); }
-  .hero-directory { @include motion.enter(mech-dock); animation-delay: var(--stagger); }
-  .post__cover { @include motion.enter(mech-dock); }
-  h1, .section-heading h2 { @include motion.enter(mech-title, var(--motion-panel)); }
+  .header {
+    @include motion.enter(mech-header, var(--motion-panel));
+  }
+  .hero-photo {
+    @include motion.enter(mech-left);
+  }
+  .hero-panel,
+  .category__hero {
+    @include motion.enter(mech-right);
+  }
+  .hero-directory {
+    @include motion.enter(mech-dock);
+    animation-delay: var(--stagger);
+  }
+  .post__cover {
+    @include motion.enter(mech-dock);
+  }
+  h1,
+  .section-heading h2 {
+    @include motion.enter(mech-title, var(--motion-panel));
+  }
   .bento-grid > .card {
     @include motion.enter(mech-dock);
     @include motion.cascade;
@@ -63,26 +132,172 @@
     }
   }
   @supports (view-transition-name: site-header) {
-    @view-transition { navigation: auto; }
-    .header { view-transition-name: site-header; }
-    ::view-transition-old(root) { animation: mech-page-out var(--motion-panel) var(--ease-mech) both; }
-    ::view-transition-new(root) { animation: mech-page-in var(--motion-panel) var(--ease-mech) both; }
-    ::view-transition-old(site-header), ::view-transition-new(site-header) { animation: none; }
+    @view-transition {
+      navigation: auto;
+    }
+    .header {
+      view-transition-name: site-header;
+    }
+    ::view-transition-old(root) {
+      animation: mech-page-out var(--motion-panel) var(--ease-mech) both;
+    }
+    ::view-transition-new(root) {
+      animation: mech-page-in var(--motion-panel) var(--ease-mech) both;
+    }
+    ::view-transition-old(site-header),
+    ::view-transition-new(site-header) {
+      animation: none;
+    }
     // Do not capture half-assembled tiles in the incoming page snapshot.
-    :root:active-view-transition :is(.header, .hero-photo, .hero-panel, .hero-directory, .category__hero, .post__cover, h1, .section-heading h2, .bento-grid > .card) {
+    :root:active-view-transition
+      :is(
+        .header,
+        .hero-photo,
+        .hero-panel,
+        .hero-directory,
+        .category__hero,
+        .post__cover,
+        h1,
+        .section-heading h2,
+        .bento-grid > .card
+      ) {
       animation: none;
     }
   }
 }
 
+// Small controls share one moving background; their text stays on the top layer.
+:is(a[href], button).button,
+a[href].chip {
+  @include motion.fill-panel;
+  transition: color var(--motion-fast) var(--ease-mech);
+}
+a[href].chip {
+  --motion-fill: var(--color-ink);
+}
+.button > [aria-hidden="true"] {
+  transition: transform var(--motion-fast) var(--ease-mech);
+}
+.sort__link,
+.pagination__link,
+.error-page__link {
+  transition:
+    background-color var(--motion-fast) var(--ease-mech),
+    color var(--motion-fast) var(--ease-mech);
+}
+:is(.header__link, .footer__nav a, .breadcrumbs a, .card__title a) {
+  position: relative;
+  &::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: var(--border);
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--motion-fast) var(--ease-mech);
+  }
+  &[aria-current]::after,
+  &:focus-visible::after {
+    transform: scaleX(1);
+  }
+}
+@include motion.hover {
+  :is(a[href], button).button:hover {
+    color: var(--color-ink);
+  }
+  a[href].chip:hover {
+    color: var(--tone-white);
+  }
+  :is(a[href], button).button:hover::before,
+  a[href].chip:hover::before {
+    transform: scaleX(1);
+  }
+  .sort__link:hover,
+  .pagination__link:hover {
+    background: var(--tone-blue);
+    color: var(--color-ink);
+  }
+  .error-page__link:hover {
+    background: var(--color-ink);
+    color: var(--tone-white);
+  }
+  :is(
+      .header__link,
+      .footer__nav a,
+      .breadcrumbs a,
+      .card__title a
+    ):hover::after {
+    transform: scaleX(1);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .button:hover > [aria-hidden="true"] {
+      transform: translateX(var(--arrow-travel));
+    }
+  }
+}
+:is(a[href], button).button:focus-visible::before,
+a[href].chip:focus-visible::before {
+  background: var(--tone-blue);
+  transform: scaleX(1);
+}
+a[href].chip:focus-visible {
+  color: var(--color-ink);
+}
+@media (prefers-reduced-motion: no-preference) {
+  @supports selector(.card:has(a[href])) {
+    .card:has(a[href]),
+    .card:has(a[href]) .card__image,
+    .card:has(a[href]) .card__top .label {
+      transition: transform var(--motion-fast) var(--ease-dock);
+    }
+    @include motion.hover {
+      .card:has(a[href]:hover) {
+        transform: translateY(calc(-1 * var(--motion-lift)));
+        .card__image {
+          transform: scale(var(--image-scale));
+        }
+        .card__top .label {
+          transform: translateX(var(--label-travel));
+        }
+      }
+    }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
   }
   @supports (view-transition-name: site-header) {
-    @view-transition { navigation: none; }
-    ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+    @view-transition {
+      navigation: none;
+    }
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+      animation: none !important;
+    }
+  }
+  :is(a[href], button).button::before,
+  a[href].chip::before,
+  :is(.header__link, .footer__nav a, .breadcrumbs a, .card__title a)::after {
+    display: none;
+  }
+  @include motion.hover {
+    :is(a[href], button).button:hover {
+      background: var(--tone-lime);
+    }
+    a[href].chip:hover {
+      background: var(--color-ink);
+    }
+    :is(.header__link, .footer__nav a, .breadcrumbs a, .card__title a):hover {
+      text-decoration: underline;
+    }
   }
 }

@@ -46,6 +46,14 @@
     summary {
       font-size: var(--font-small);
     }
+    > nav {
+      position: absolute;
+      inset-inline: 0;
+      top: 100%;
+      padding: var(--space-4);
+      border-bottom: var(--border) solid var(--color-ink);
+      background: var(--color-bg);
+    }
     @include bp.up(desktop) {
       display: none;
     }

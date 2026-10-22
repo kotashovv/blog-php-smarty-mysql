@@ -36,9 +36,6 @@
   }
   &__title {
     font-size: var(--font-card);
-    a:hover {
-      text-decoration: underline;
-    }
   }
   &__excerpt {
     margin-top: var(--space-2);
@@ -57,6 +54,11 @@
     width: 100%;
     height: s.$card-image-height;
     object-fit: cover;
+  }
+  &__media {
+    display: block;
+    height: s.$card-image-height;
+    overflow: hidden;
   }
   &--large &__body {
     padding: var(--space-8);
@@ -95,6 +97,11 @@
   &.card--photo {
     position: relative;
     justify-content: end;
+    .card__media {
+      position: absolute;
+      inset: 0;
+      height: 100%;
+    }
     .card__image {
       position: absolute;
       inset: 0;

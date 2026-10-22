@@ -75,10 +75,6 @@
         background: $color;
       }
     }
-    &:hover {
-      background: var(--color-ink);
-      color: var(--tone-white);
-    }
     &:focus-visible {
       outline: none;
       text-decoration: underline;
