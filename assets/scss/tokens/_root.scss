@@ -1,0 +1,46 @@
+@use "sass:meta";
+@use "colors";
+@use "typography";
+@use "spacing";
+@use "chamfer";
+@use "breakpoints";
+:root {
+  --color-bg: #{colors.$bg};
+  --color-ink: #{colors.$ink};
+  --color-muted: #{colors.$muted};
+  --color-subtle: #{colors.$subtle};
+  @each $name, $value in colors.$tones {
+    --tone-#{$name}: #{$value};
+  }
+  @each $name, $value in typography.$sizes {
+    --font-#{$name}: #{$value};
+  }
+  @each $name, $value in spacing.$spaces {
+    --space-#{$name}: #{$value};
+  }
+  --font-headline: #{meta.inspect(typography.$headline)};
+  --font-ui: #{meta.inspect(typography.$ui)};
+  --family-article: #{meta.inspect(typography.$article)};
+  --font-code: #{meta.inspect(typography.$code)};
+  --weight-regular: #{typography.$regular};
+  --weight-medium: #{typography.$medium};
+  --weight-bold: #{typography.$bold};
+  --weight-heavy: #{typography.$heavy};
+  --weight-black: #{typography.$black};
+  --line-tight: #{typography.$tight};
+  --line-heading: #{typography.$heading-line};
+  --line-ui: #{typography.$ui-line};
+  --line-article: #{typography.$article-line};
+  --tracking-tight: #{typography.$tracking};
+  --tracking-label: #{typography.$label-tracking};
+  --grid-gap: #{spacing.$gap};
+  --grid-gap-large: #{spacing.$gap-large};
+  --border: #{spacing.$border};
+  --transition: #{spacing.$transition};
+  --chamfer-sm: #{chamfer.$sm};
+  --chamfer-md: #{chamfer.$md};
+  --chamfer-lg: #{chamfer.$lg};
+  --chamfer-mobile: #{chamfer.$mobile};
+  --container: #{breakpoints.$container};
+  --article-measure: #{breakpoints.$article};
+}

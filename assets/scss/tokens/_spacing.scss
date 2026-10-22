@@ -1,0 +1,30 @@
+$spaces: (
+  1: 0.25rem,
+  2: 0.5rem,
+  3: 0.75rem,
+  4: 1rem,
+  5: 1.25rem,
+  6: 1.5rem,
+  8: 2rem,
+  10: 2.5rem,
+  12: 3rem,
+  16: 4rem,
+  20: 5rem,
+);
+$gap: 1rem;
+$gap-large: 1.5rem;
+$border: 1.5px;
+$focus: 3px;
+$focus-offset: 4px;
+$header-height: 5rem;
+$card-height: 22.5rem;
+$hero-height: 36.25rem;
+$cover-height: 36.25rem;
+$cover-mobile-height: 25rem;
+$card-image-height: 9rem;
+$error-link-height: 6rem;
+$error-display: clamp(5.5rem, 16vw, 9.375rem);
+$error-width: 64rem;
+$post-title: 3.375rem;
+$transition: 120ms ease;
+$editorial-card-height: 20rem;
