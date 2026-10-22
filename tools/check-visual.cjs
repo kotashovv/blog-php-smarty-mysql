@@ -1,6 +1,6 @@
 const { chromium } = require("playwright");
 const fs = require("node:fs");
-const baseUrl = process.env.PREVIEW_URL || "http://127.0.0.1:8088";
+const baseUrl = process.env.PREVIEW_URL || "http://127.0.0.1:8080";
 let browser;
 (async () => {
   fs.mkdirSync("tools/visual-output", { recursive: true });
@@ -9,8 +9,8 @@ let browser;
   for (const width of [390, 1440]) {
     for (const [name, route] of [
       ["home", "/"],
-      ["category", "/category"],
-      ["post", "/post"],
+      ["category", "/category/architecture"],
+      ["post", "/post/sustainable-systems"],
       ["404", "/missing"],
     ]) {
       const page = await browser.newPage({
