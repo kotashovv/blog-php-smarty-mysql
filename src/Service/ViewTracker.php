@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\Repository\PostRepository;
-use RuntimeException;
 
 final class ViewTracker
 {
@@ -13,30 +12,15 @@ final class ViewTracker
     {
     }
 
+    /**
+     * DEMO RULE: every GET of an article page is one view, so a click or a plain refresh counts.
+     * This keeps the sorting by views easy to verify by hand. A production blog would deduplicate
+     * (per session / IP window) and skip bots; the atomic `views = views + 1` stays the same.
+     */
     public function record(int $postId): bool
     {
-        // Hold the session lock until the increment is recorded: concurrent reloads share this lock.
-        if (!session_start([
-            'use_strict_mode' => 1,
-            'use_only_cookies' => 1,
-            'cookie_httponly' => true,
-            'cookie_samesite' => 'Lax',
-            'cookie_secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
-            'cookie_path' => '/',
-            'cache_limiter' => '',
-        ])) {
-            throw new RuntimeException('Cannot start the view session.');
-        }
-        try {
-            if (isset($_SESSION['viewed_posts'][$postId])) {
-                return false;
-            }
-            $this->posts->incrementViews($postId);
-            $_SESSION['viewed_posts'][$postId] = true;
+        $this->posts->incrementViews($postId);
 
-            return true;
-        } finally {
-            session_write_close();
-        }
+        return true;
     }
 }
