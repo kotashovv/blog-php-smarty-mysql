@@ -32,3 +32,12 @@ CREATE TABLE IF NOT EXISTS post_category (
     CONSTRAINT post_category_post_fk FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
     CONSTRAINT post_category_category_fk FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE IF NOT EXISTS subscribers (
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+    email VARCHAR(254) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY subscribers_email_unique (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

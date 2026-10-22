@@ -30,8 +30,22 @@ final class View
         $smarty->setCacheDir($root . '/var/cache');
         $smarty->setEscapeHtml(true);
         $smarty->assign('tones', ['lime', 'blue', 'lavender', 'yellow']);
+        // Every page carries the subscribe popup, so a GET starts a session for its CSRF token.
+        $smarty->registerPlugin(
+            'function',
+            'csrf_token',
+            // HEAD gets no token (and no session cookie): its body is discarded anyway.
+            static fn (): string => ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'HEAD' ? '' : Csrf::token()
+        );
 
         return $smarty;
+    }
+
+    /** True when the visitor clicked through from another page of this site. */
+    private static function isInternalNavigation(): bool
+    {
+        return ($_SERVER['HTTP_SEC_FETCH_SITE'] ?? '') === 'same-origin'
+            && ($_SERVER['HTTP_SEC_FETCH_MODE'] ?? '') === 'navigate';
     }
 
     /** @param array<string, mixed> $data */
@@ -39,7 +53,12 @@ final class View
     {
         $page = $this->smarty->createTemplate($template);
         $page->assign($data);
+        $page->assign('isNavigation', self::isInternalNavigation());
 
-        return new Response($page->fetch(), $status);
+        // The entrance animation depends on how the visitor arrived, so caches must not share it.
+        return new Response($page->fetch(), $status, [
+            'Content-Type' => 'text/html; charset=utf-8',
+            'Vary' => 'Sec-Fetch-Site',
+        ]);
     }
 }

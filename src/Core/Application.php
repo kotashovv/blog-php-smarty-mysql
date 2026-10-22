@@ -19,8 +19,8 @@ final class Application
             $response = $this->router->dispatch($method, $uri);
         } catch (NotFoundException) {
             $response = $this->errors->notFound();
-        } catch (MethodNotAllowedException) {
-            $response = $this->errors->methodNotAllowed();
+        } catch (MethodNotAllowedException $exception) {
+            $response = $this->errors->methodNotAllowed($exception->allow);
         } catch (Throwable $exception) {
             error_log((string) $exception);
 

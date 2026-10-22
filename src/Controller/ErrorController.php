@@ -24,11 +24,11 @@ final class ErrorController
         return $this->error(500, 'Внутренняя ошибка сервера', 'Попробуйте открыть страницу позже.');
     }
 
-    public function methodNotAllowed(): Response
+    public function methodNotAllowed(string $allow = 'GET, HEAD'): Response
     {
-        $response = $this->error(405, 'Метод не поддерживается', 'Для просмотра страницы используйте GET или HEAD.');
+        $response = $this->error(405, 'Метод не поддерживается', 'Для этого адреса допустимы методы: ' . $allow . '.');
 
-        return new Response($response->body, 405, $response->headers + ['Allow' => 'GET, HEAD']);
+        return new Response($response->body, 405, $response->headers + ['Allow' => $allow]);
     }
 
     private function error(int $status, string $title, string $description): Response

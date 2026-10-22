@@ -1,0 +1,87 @@
+@use "../mixins/breakpoints" as bp;
+@use "../mixins/chamfer" as c;
+.subscribe-form {
+  display: grid;
+  gap: var(--space-3);
+  align-content: start;
+  &__row {
+    display: grid;
+    gap: var(--space-3);
+    @include bp.up(small) {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+  }
+  input {
+    min-width: 0;
+    min-height: 3rem;
+    padding: var(--space-3) var(--space-4);
+    border: var(--border) solid var(--color-ink);
+    border-radius: 0;
+    background: var(--color-bg);
+    color: var(--color-ink);
+    font: inherit;
+  }
+  &__note {
+    font-size: var(--font-small);
+    color: var(--color-muted);
+  }
+}
+.subscribe-popup {
+  @include c.chamfer(var(--chamfer-lg));
+  width: min(calc(100vw - var(--space-8)), 32rem);
+  max-height: calc(100dvh - var(--space-8));
+  overflow-y: auto;
+  margin: auto;
+  padding: var(--space-6);
+  border: var(--border) solid var(--color-ink);
+  background: var(--tone-lime);
+  color: var(--color-ink);
+  &::backdrop {
+    background: rgb(15 15 18 / 35%);
+  }
+  &__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+  &__close {
+    @include c.chamfer(var(--chamfer-sm));
+    min-height: 2.75rem;
+    padding: var(--space-2) var(--space-4);
+    border: var(--border) solid var(--color-ink);
+    background: var(--tone-white);
+    color: var(--color-ink);
+    font: var(--weight-heavy) var(--font-label)/var(--line-ui) var(--font-ui);
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  h2 {
+    margin-bottom: var(--space-3);
+  }
+  p {
+    margin-bottom: var(--space-4);
+  }
+  .subscribe-form__note {
+    margin-bottom: 0;
+  }
+}
+.notice-page {
+  padding-block: var(--space-12);
+}
+.notice {
+  @include c.chamfer(var(--chamfer-lg));
+  display: grid;
+  gap: var(--space-4);
+  max-width: 40rem;
+  padding: var(--space-8);
+  border: var(--border) solid var(--color-ink);
+  background: var(--tone-lime);
+  &--error {
+    background: var(--tone-yellow);
+  }
+}
+.newsletter {
+  @include c.chamfer(var(--chamfer-lg));
+}
