@@ -86,6 +86,3 @@
     padding: var(--space-12);
   }
 }
-.newsletter {
-  @include c.chamfer(var(--chamfer-lg));
-}
