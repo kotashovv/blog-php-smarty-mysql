@@ -7,7 +7,18 @@ set_error_handler(static function (int $severity, string $message, string $file,
 });
 
 $smarty = require dirname(__DIR__) . '/config/smarty.php';
-$data = json_decode(file_get_contents(__DIR__ . '/fixtures/views.json'), true, 512, JSON_THROW_ON_ERROR);
+$pages = new App\Service\PagePresenter();
+$category = new App\Model\Category(1, 'test', 'Тестовый раздел', 'Описание раздела');
+$post = new App\Model\Post(1, 'test', 'Заголовок', 'Описание', '<p>Текст</p>', '/uploads/test.svg', 12, '2026-10-21 12:00:00');
+$presented = (new App\Service\PostPresenter())->present($post, [$category]);
+$common = $pages->common('Тест', 'Описание', [$category]);
+$data = [
+    'common' => $common,
+    'home' => ['hero' => $presented, 'categories' => [App\Service\PagePresenter::category($category) + ['posts' => [$presented]]], 'categoryChips' => []],
+    'category' => ['category' => App\Service\PagePresenter::category($category) + ['totalLabel' => '40 статей'], 'posts' => [$presented], 'page' => 2, 'pages' => 5, 'sort' => 'date', 'baseUrl' => '/category/test', 'breadcrumbs' => []],
+    'post' => ['post' => $presented, 'relatedPosts' => [$presented], 'breadcrumbs' => []],
+    '404' => $pages->error(404, 'Не найдено', 'Страница отсутствует'),
+];
 $payload = '<script>alert("escaped")</script>';
 foreach (['home', 'category', 'post', '404'] as $view) {
     $smarty->clearAllAssign();

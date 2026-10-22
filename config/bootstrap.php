@@ -2,28 +2,47 @@
 
 declare(strict_types=1);
 
+use App\Controller\CategoryController;
 use App\Controller\ErrorController;
 use App\Controller\HomeController;
-use App\Controller\PreviewController;
+use App\Controller\PostController;
 use App\Core\Application;
 use App\Core\Config;
+use App\Core\Database;
 use App\Core\Response;
 use App\Core\Router;
 use App\Core\View;
-use App\Service\DemoContent;
+use App\Repository\CategoryRepository;
+use App\Repository\PostRepository;
+use App\Service\CategoryService;
+use App\Service\HomeService;
+use App\Service\PostService;
+use App\Service\ViewTracker;
 
 $config = new Config(dirname(__DIR__));
 $view = new View($config);
-$content = new DemoContent($config);
-$errors = new ErrorController($view, $content);
-$home = new HomeController($view, $content);
-$preview = new PreviewController($view, $content);
+$database = new Database($config);
+$errors = new ErrorController($view);
 $router = new Router();
-$router->get('/', static fn (): Response => $home->index());
-$router->get('/category/{slug}', static fn (array $params): Response => $preview->category($params['slug']));
-$router->get('/post/{slug}', static fn (array $params): Response => $preview->post($params['slug']));
-// Backward-compatible preview links. Remove when database-backed routes replace these adapters.
-$router->get('/category', static fn (): Response => new Response('', 302, ['Location' => '/category/architecture']));
-$router->get('/post', static fn (): Response => new Response('', 302, ['Location' => '/post/sustainable-systems']));
+// Resolve the lazy database only inside a handler, so errors still render without a database.
+$repositories = static fn (): array => [
+    new CategoryRepository($database->connection()), new PostRepository($database->connection()),
+];
+$router->get('/', static function () use ($repositories, $view): Response {
+    [$categories, $posts] = $repositories();
+
+    return (new HomeController($view, new HomeService($categories, $posts)))->index();
+});
+$router->get('/category/{slug}', static function (array $params, array $query) use ($repositories, $view): Response {
+    [$categories, $posts] = $repositories();
+
+    return (new CategoryController($view, new CategoryService($categories, $posts)))->show($params['slug'], $query);
+});
+$router->get('/post/{slug}', static function (array $params, array $query, string $method) use ($repositories, $view): Response {
+    [$categories, $posts] = $repositories();
+    $content = new PostService($categories, $posts, new ViewTracker($posts));
+
+    return (new PostController($view, $content))->show($params['slug'], $method);
+});
 
 return new Application($router, $errors);

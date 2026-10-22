@@ -6,17 +6,17 @@ namespace App\Controller;
 
 use App\Core\Response;
 use App\Core\View;
-use App\Service\DemoContent;
+use App\Service\PagePresenter;
 
 final class ErrorController
 {
-    public function __construct(private readonly View $view, private readonly DemoContent $content)
+    public function __construct(private readonly View $view, private readonly PagePresenter $content = new PagePresenter())
     {
     }
 
     public function notFound(): Response
     {
-        return $this->view->render('404.tpl', $this->content->page('404'), 404);
+        return $this->error(404, 'МАТЕРИАЛ НЕ СУЩЕСТВУЕТ', 'Проверьте адрес или вернитесь на главную страницу.');
     }
 
     public function serverError(): Response
@@ -33,17 +33,7 @@ final class ErrorController
 
     private function error(int $status, string $title, string $description): Response
     {
-        $data = $this->content->page('404');
-        $data['meta'] = ['title' => $status . ' / ' . $title, 'description' => $description];
-        $data['error'] = array_replace($data['error'], [
-            'systemLabel' => 'SYS.ERR // ' . $status,
-            'label' => 'Ошибка ' . $status,
-            'codeLabel' => '[ КОД / ' . $status . ' ]',
-            'code' => (string) $status,
-            'title' => $title,
-            'description' => $description,
-            'statusLabel' => 'Статус: запрос не выполнен',
-        ]);
+        $data = $this->content->error($status, $title, $description);
 
         return $this->view->render('404.tpl', $data, $status);
     }

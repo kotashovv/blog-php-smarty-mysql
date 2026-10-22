@@ -24,7 +24,6 @@ COPY database ./database
 COPY design/tokens.json ./design/tokens.json
 COPY templates ./templates
 COPY public ./public
-COPY tools/fixtures ./tools/fixtures
 COPY docker/php/app.ini /usr/local/etc/php/conf.d/app.ini
 COPY --from=css /build/public/assets/css/main.css ./public/assets/css/main.css
 RUN mkdir -p var/templates_c var/cache public/uploads \

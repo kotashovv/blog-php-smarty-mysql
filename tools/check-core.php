@@ -10,7 +10,7 @@ use App\Core\NotFoundException;
 use App\Core\Response;
 use App\Core\Router;
 use App\Core\View;
-use App\Service\DemoContent;
+use App\Service\PagePresenter;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
@@ -41,7 +41,7 @@ echo "Router: GET/HEAD, slug parameters, query strings, invalid paths, method re
 
 $config = new Config(dirname(__DIR__));
 $view = new View($config);
-$content = new DemoContent($config);
+$content = new PagePresenter();
 $errors = new ErrorController($view, $content);
 $router->get('/failure', static function (): never {
     throw new RuntimeException('PRIVATE-DETAIL-MUST-NOT-LEAK');
@@ -74,10 +74,10 @@ $smarty = View::createSmarty($config->root);
 check($smarty->escape_html === true, 'Global escaping is disabled');
 check(str_starts_with(realpath($smarty->getCompileDir()), realpath($config->root . '/var')), 'Compile path');
 echo "Smarty: automatic escaping, compile/cache directories outside public OK\n";
-$first = $content->page('home');
+$first = $content->common('Проверка', 'Тест') + ['hero' => null, 'categories' => [], 'categoryChips' => []];
 $first['meta']['title'] = 'FIRST-RENDER-ONLY';
 check(str_contains($view->render('home.tpl', $first)->body, 'FIRST-RENDER-ONLY'), 'First page model');
-$second = $view->render('404.tpl', $content->page('404'));
+$second = $view->render('404.tpl', $content->error(404, 'Не найдено', 'Страница отсутствует'));
 check(!str_contains($second->body, 'FIRST-RENDER-ONLY'), 'Page data leaked between renders');
 check(str_contains($second->body, 'error-page__link--lime'), 'Global tones were lost');
 echo "View: isolated page models and shared tones across repeated renders OK\n";

@@ -122,7 +122,7 @@ let browser;
     await page.waitForTimeout(650);
     await Promise.all([
       page.waitForURL("**/post/sustainable-systems"),
-      page.locator(".hero-panel .button").click(),
+      page.locator(".hero-panel h1 a").click(),
     ]);
     await page.waitForTimeout(900);
     assert.equal(await page.locator("h1").count(), 1);

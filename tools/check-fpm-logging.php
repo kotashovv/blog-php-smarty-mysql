@@ -41,8 +41,7 @@ try {
     require dirname(__DIR__) . '/vendor/autoload.php';
     $config = new App\Core\Config(dirname(__DIR__));
     $view = new App\Core\View($config);
-    $content = new App\Service\DemoContent($config);
-    $errors = new App\Controller\ErrorController($view, $content);
+    $errors = new App\Controller\ErrorController($view);
     $router = new App\Core\Router();
     $router->get('/internal-log-probe', static function (): never {
         throw new RuntimeException($_SERVER['REVIEW_LOG_MARKER']);

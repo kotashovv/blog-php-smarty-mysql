@@ -41,7 +41,10 @@ final class Router
             }
             $parameters = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
 
-            return ($route['handler'])($parameters);
+            $query = [];
+            parse_str((string) parse_url($uri, PHP_URL_QUERY), $query);
+
+            return ($route['handler'])($parameters, $query, $method);
         }
 
         throw new NotFoundException();
