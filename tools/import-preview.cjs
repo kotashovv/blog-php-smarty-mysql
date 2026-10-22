@@ -3,7 +3,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { load } = require("cheerio");
 const read = (dir) =>
-  load(fs.readFileSync(path.join(dir, "code.html"), "utf8"));
+  load(fs.readFileSync(path.join("design", "reference", dir, "code.html"), "utf8"));
 const text = ($el) => $el.text().replace(/\s+/g, " ").trim();
 const image = ($el) =>
   $el.length
