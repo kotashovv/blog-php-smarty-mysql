@@ -4,8 +4,12 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
       target: web
-    ports: ["8080:80"]
-    depends_on: [app]
+    ports: ["${WEB_PORT:-8080}:80"]
+    depends_on:
+      app:
+        condition: service_started
+      setup:
+        condition: service_completed_successfully
     volumes:
       - uploads:/var/www/html/public/uploads:ro
   app:
@@ -13,6 +17,7 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
       target: app
+    image: blog-app
     environment:
       APP_ENV: ${APP_ENV:-development}
       DB_HOST: db
@@ -26,6 +31,25 @@ services:
     depends_on:
       db:
         condition: service_healthy
+  # One-shot: creates the tables and seeds the demo data (both steps are idempotent), then exits.
+  # The web service waits for it, so a single `docker compose up` yields a populated site.
+  setup:
+    image: blog-app
+    command: ["sh", "-c", "php bin/migrate.php && php bin/seed.php"]
+    restart: "no"
+    environment:
+      APP_ENV: ${APP_ENV:-development}
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: ${MYSQL_DATABASE:-bento}
+      DB_USER: ${MYSQL_USER:-bento}
+      DB_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+      SEED_DATE: ${SEED_DATE:-}
+    depends_on:
+      db:
+        condition: service_healthy
+      app:
+        condition: service_started
   db:
     image: mysql:8.4
     environment:
