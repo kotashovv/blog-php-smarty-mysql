@@ -4,5 +4,10 @@
   "require": {
     "php": ">=8.1",
     "smarty/smarty": "^5.6"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
   }
 }
