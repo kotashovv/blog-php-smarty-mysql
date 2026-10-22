@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{$site.language}">
+<html lang="{$site.language}"{if $isNavigation} class="is-nav"{/if}>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,5 +15,6 @@
   {block name="header"}{include file="partials/header.tpl"}{/block}
   <main id="content" class="site-main">{block name="content"}{/block}</main>
   {block name="footer"}{include file="partials/footer.tpl"}{/block}
+  <script src="/assets/js/listing.js" defer></script>
 </body>
 </html>

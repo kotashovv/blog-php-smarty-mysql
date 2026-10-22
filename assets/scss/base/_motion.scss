@@ -46,6 +46,21 @@
     transform: none;
   }
 }
+@keyframes mech-unfold {
+  0% {
+    opacity: 0;
+    transform: translateY(var(--travel)) scaleY(0.94);
+  }
+  70% {
+    opacity: 1;
+    transform: translateY(calc(-1 * var(--latch))) scaleY(1);
+    animation-timing-function: var(--ease-dock);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
 @keyframes mech-title {
   from {
     clip-path: inset(0 100% 0 0);
@@ -54,20 +69,18 @@
     clip-path: inset(0);
   }
 }
-@keyframes mech-header {
+@keyframes popup-part {
   from {
-    transform: translateY(-100%);
-  }
-  to {
-    transform: none;
+    opacity: 0;
+    transform: translateY(8px);
   }
 }
-@keyframes mech-panel {
+@keyframes mech-fade {
   from {
-    clip-path: inset(0 0 100% 0);
+    opacity: 0;
   }
   to {
-    clip-path: inset(0);
+    opacity: 1;
   }
 }
 @keyframes mech-page-out {
@@ -92,37 +105,104 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .header {
-    @include motion.enter(mech-header, var(--motion-panel));
-  }
-  .hero-photo {
-    @include motion.enter(mech-left);
-  }
-  .hero-panel,
-  .category__hero {
-    @include motion.enter(mech-right);
-  }
-  .hero-directory {
-    @include motion.enter(mech-dock);
-    animation-delay: var(--stagger);
-  }
-  .post__cover {
-    @include motion.enter(mech-dock);
-  }
-  h1,
-  .section-heading h2 {
-    @include motion.enter(mech-title, var(--motion-panel));
-  }
-  .bento-grid > .card {
-    @include motion.enter(mech-dock);
-    @include motion.cascade;
-  }
-  .header__mobile[open] > nav {
-    @include motion.enter(mech-panel, var(--motion-panel));
-    > a {
-      @include motion.enter(mech-left, var(--motion-panel));
+  // The assembly plays once, when a visitor arrives. Clicks inside the site (html.is-nav, set by the
+  // server from Sec-Fetch-Site) only get the page transition below, so nothing animates twice.
+  html:not(.is-nav) {
+    .hero-photo {
+      @include motion.enter(mech-left);
+    }
+    .hero-panel,
+    .category__hero {
+      @include motion.enter(mech-right);
+    }
+    .hero-directory {
+      @include motion.enter(mech-dock);
+      animation-delay: var(--stagger);
+    }
+    .post__cover {
+      @include motion.enter(mech-dock);
+    }
+    h1,
+    .section-heading h2 {
+      @include motion.enter(mech-title, var(--motion-panel));
+    }
+    .bento-grid > .card {
+      @include motion.enter(mech-dock);
       @include motion.cascade;
     }
+  }
+  // After sorting or paging swaps the listing in place (listing.js sets .listing--swap), the cards
+  // reassemble in sequence, so the change reads as a rebuild rather than a silent replacement.
+  .listing--swap {
+    .category__toolbar > * {
+      @include motion.enter(mech-left, var(--motion-panel));
+    }
+    .bento-grid > .card {
+      @include motion.enter(mech-dock);
+      @include motion.cascade;
+    }
+    .bento-grid > .card:first-child {
+      animation-name: mech-left;
+    }
+    .pagination {
+      @include motion.enter(mech-dock);
+      animation-delay: calc(6 * var(--stagger));
+    }
+  }
+  // Popovers become display:block on every open, so these replay each time (unlike <details>).
+  .header__panel:popover-open {
+    @include motion.enter(mech-right, var(--motion-panel));
+    > a {
+      @include motion.enter(mech-right, var(--motion-panel));
+      @include motion.cascade;
+    }
+  }
+  // Subscribe popup: one calm motion. The panel and backdrop fade and rise together and run back on
+  // close (transitions, so the exit plays too); the parts follow with a short fade-up, same direction.
+  .subscribe-popup {
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity var(--motion-panel) var(--ease-dock),
+      transform var(--motion-panel) var(--ease-dock),
+      overlay var(--motion-panel) allow-discrete,
+      display var(--motion-panel) allow-discrete;
+    &:popover-open {
+      opacity: 1;
+      transform: none;
+      @starting-style {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      > * {
+        animation: popup-part var(--motion-panel) var(--ease-dock) backwards;
+      }
+      > :nth-child(2) {
+        animation-delay: 30ms;
+      }
+      > :nth-child(3) {
+        animation-delay: 60ms;
+      }
+      > :nth-child(4) {
+        animation-delay: 90ms;
+      }
+    }
+    &::backdrop {
+      opacity: 0;
+      transition:
+        opacity var(--motion-panel) var(--ease-dock),
+        overlay var(--motion-panel) allow-discrete,
+        display var(--motion-panel) allow-discrete;
+    }
+    &:popover-open::backdrop {
+      opacity: 1;
+      @starting-style {
+        opacity: 0;
+      }
+    }
+  }
+  .header__panel:popover-open::backdrop {
+    animation: mech-fade var(--motion-fast) var(--ease-mech) backwards;
   }
   @supports (animation-timeline: view()) {
     .home__section {
@@ -148,21 +228,6 @@
     ::view-transition-new(site-header) {
       animation: none;
     }
-    // Do not capture half-assembled tiles in the incoming page snapshot.
-    :root:active-view-transition
-      :is(
-        .header,
-        .hero-photo,
-        .hero-panel,
-        .hero-directory,
-        .category__hero,
-        .post__cover,
-        h1,
-        .section-heading h2,
-        .bento-grid > .card
-      ) {
-      animation: none;
-    }
   }
 }
 
@@ -185,7 +250,7 @@ a[href].chip {
     background-color var(--motion-fast) var(--ease-mech),
     color var(--motion-fast) var(--ease-mech);
 }
-:is(.header__link, .footer__nav a, .breadcrumbs a, .card__title a) {
+:is(.header__link, .footer__nav a, .breadcrumbs a) {
   position: relative;
   &::after {
     content: "";
@@ -226,8 +291,7 @@ a[href].chip {
   :is(
       .header__link,
       .footer__nav a,
-      .breadcrumbs a,
-      .card__title a
+      .breadcrumbs a
     ):hover::after {
     transform: scaleX(1);
   }
@@ -286,7 +350,7 @@ a[href].chip:focus-visible {
   }
   :is(a[href], button).button::before,
   a[href].chip::before,
-  :is(.header__link, .footer__nav a, .breadcrumbs a, .card__title a)::after {
+  :is(.header__link, .footer__nav a, .breadcrumbs a)::after {
     display: none;
   }
   @include motion.hover {
@@ -296,7 +360,8 @@ a[href].chip:focus-visible {
     a[href].chip:hover {
       background: var(--color-ink);
     }
-    :is(.header__link, .footer__nav a, .breadcrumbs a, .card__title a):hover {
+    :is(.header__link, .footer__nav a, .breadcrumbs a):hover,
+    .card:hover .card__title a {
       text-decoration: underline;
     }
   }

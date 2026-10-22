@@ -1,0 +1,51 @@
+// Sorting and pagination swap this region in place (public/assets/js/listing.js).
+.listing {
+  position: relative;
+  display: grid;
+  gap: var(--space-8);
+  // The bar appears only if loading takes longer than a blink, so quick swaps do not flash.
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: var(--space-1);
+    background: var(--color-ink);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 2;
+  }
+  &--loading .category__posts,
+  &--loading .pagination {
+    opacity: 0.4;
+    pointer-events: none;
+    transition: opacity var(--motion-fast) var(--ease-mech) 120ms;
+  }
+  &--loading::before {
+    opacity: 1;
+    transition: opacity var(--motion-fast) var(--ease-mech) 120ms;
+    transform-origin: left;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .listing--loading::before {
+    animation: listing-load 900ms var(--ease-mech) infinite;
+  }
+}
+@keyframes listing-load {
+  from {
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  50% {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+  50.01% {
+    transform: scaleX(1);
+    transform-origin: right;
+  }
+  to {
+    transform: scaleX(0);
+    transform-origin: right;
+  }
+}
