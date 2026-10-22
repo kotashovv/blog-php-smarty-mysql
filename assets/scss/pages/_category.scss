@@ -7,7 +7,7 @@
     display: grid;
     gap: var(--space-8);
     h1 {
-      font-size: var(--font-medium);
+      font-size: var(--font-card);
       @include bp.up(desktop) {
         font-size: var(--font-display);
       }

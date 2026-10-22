@@ -1,4 +1,5 @@
 @use "../mixins/chamfer" as c;
+@use "../mixins/breakpoints" as bp;
 @use "../tokens/colors";
 @use "../tokens/spacing" as s;
 .card {
@@ -61,7 +62,10 @@
     padding: var(--space-8);
   }
   &--large &__title {
-    font-size: var(--font-medium);
+    font-size: var(--font-card);
+    @include bp.up(desktop) {
+      font-size: var(--font-medium);
+    }
   }
   &--photo {
     background: var(--tone-white);

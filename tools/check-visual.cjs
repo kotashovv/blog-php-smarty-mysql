@@ -1,8 +1,10 @@
 const { chromium } = require("playwright");
 const fs = require("node:fs");
+const baseUrl = process.env.PREVIEW_URL || "http://127.0.0.1:8088";
+let browser;
 (async () => {
   fs.mkdirSync("tools/visual-output", { recursive: true });
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  browser = await chromium.launch({ channel: "chrome", headless: true });
   const results = [];
   for (const width of [390, 1440]) {
     for (const [name, route] of [
@@ -17,9 +19,14 @@ const fs = require("node:fs");
       });
       const errors = [];
       page.on("pageerror", (e) => errors.push(e.message));
-      const response = await page.goto(`http://127.0.0.1:8088${route}`, {
+      const response = await page.goto(`${baseUrl}${route}`, {
         waitUntil: "networkidle",
       });
+      const expectedStatus = name === "404" ? 404 : 200;
+      if (response.status() !== expectedStatus)
+        throw Error(
+          `${route}: HTTP ${response.status()}, expected ${expectedStatus}`,
+        );
       await page.evaluate(() => document.fonts.ready);
       // Load lazy images before the full-page capture.
       await page
@@ -67,9 +74,18 @@ const fs = require("node:fs");
     JSON.stringify(results, null, 2),
   );
   console.log(JSON.stringify(results, null, 2));
-  if (results.some((r) => r.overflow || r.fonts.length || r.errors.length))
+  if (
+    results.some(
+      (r) =>
+        r.overflow ||
+        r.brokenImages.length ||
+        r.fonts.length ||
+        r.errors.length,
+    )
+  )
     process.exitCode = 1;
-})().catch((e) => {
+})().catch(async (e) => {
   console.error(e);
+  await browser?.close();
   process.exitCode = 1;
 });
