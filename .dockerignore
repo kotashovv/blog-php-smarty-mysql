@@ -3,3 +3,5 @@ vendor
 var
 .git
 tools/visual-output
+.env
+public/assets/css

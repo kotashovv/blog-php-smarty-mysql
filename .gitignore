@@ -1,6 +1,6 @@
 /node_modules/
 /vendor/
 /var/
-/public/assets/css/*.map
+/public/assets/css/
 /tools/visual-output/
 .env

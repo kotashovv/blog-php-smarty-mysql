@@ -8,23 +8,25 @@ RUN npm run build:css
 FROM composer:2 AS dependencies
 WORKDIR /app
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --prefer-dist --no-interaction --no-scripts
+COPY src ./src
+RUN composer install --no-dev --prefer-dist --no-interaction --no-scripts --classmap-authoritative
 
-FROM php:8.3-fpm-alpine AS runtime
-RUN docker-php-ext-install pdo_mysql
+FROM php:8.2-fpm-alpine AS app
+RUN docker-php-ext-install pdo_mysql \
+    && sed -i '/^user =/d; /^group =/d' /usr/local/etc/php-fpm.d/www.conf
 WORKDIR /var/www/html
 COPY --from=dependencies /app/vendor ./vendor
+COPY --from=dependencies /app/src ./src
+COPY composer.json composer.lock ./
 COPY config ./config
 COPY templates ./templates
 COPY public ./public
+COPY tools/fixtures ./tools/fixtures
+COPY docker/php/app.ini /usr/local/etc/php/conf.d/app.ini
 COPY --from=css /build/public/assets/css/main.css ./public/assets/css/main.css
-RUN mkdir -p var/smarty/compile && chown -R www-data:www-data var
-
-# Isolated preview image; replace the front controller with the existing app in production.
-FROM runtime AS preview
-COPY tools/preview.php tools/preview.php
-COPY tools/fixtures tools/fixtures
-COPY docker/php/preview-index.php public/index.php
+RUN mkdir -p var/templates_c var/cache public/uploads \
+    && chown -R www-data:www-data var public/uploads
+USER www-data
 
 FROM nginx:1.27-alpine AS web
 COPY docker/nginx/default.conf /etc/nginx/conf.d/default.conf
