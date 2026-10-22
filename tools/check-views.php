@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+// Templates start a CSRF session; buffer output so headers are not "sent" by earlier echo lines.
+ob_start();
+
 set_error_handler(static function (int $severity, string $message, string $file, int $line): never {
     throw new ErrorException($message, 0, $severity, $file, $line);
 });
@@ -15,7 +18,7 @@ $common = $pages->common('Тест', 'Описание', [$category]);
 $data = [
     'common' => $common,
     'home' => ['hero' => $presented, 'categories' => [App\Service\PagePresenter::category($category) + ['posts' => [$presented]]], 'categoryChips' => []],
-    'category' => ['category' => App\Service\PagePresenter::category($category) + ['totalLabel' => '40 статей'], 'posts' => [$presented], 'page' => 2, 'pages' => 5, 'sort' => 'date', 'baseUrl' => '/category/test', 'breadcrumbs' => []],
+    'category' => ['category' => App\Service\PagePresenter::category($category) + ['totalLabel' => '40 статей'], 'posts' => [$presented], 'page' => 2, 'pages' => 5, 'sort' => 'date', 'dir' => 'desc', 'sortLinks' => [['label' => 'По дате', 'url' => '/category/test?sort=date&dir=asc', 'active' => true, 'arrow' => '↓', 'title' => 'По дате'], ['label' => 'По просмотрам', 'url' => '/category/test?sort=views&dir=desc', 'active' => false, 'arrow' => '↓', 'title' => 'По просмотрам']], 'baseUrl' => '/category/test', 'breadcrumbs' => []],
     'post' => ['post' => $presented, 'relatedPosts' => [$presented], 'breadcrumbs' => []],
     '404' => $pages->error(404, 'Не найдено', 'Страница отсутствует'),
 ];
@@ -61,9 +64,9 @@ foreach (['home', 'category', 'post', '404'] as $view) {
     echo $view . ": render, escaping and semantics OK\n";
 }
 
-$smarty->assign(array_replace($data['common'], $data['category'], ['page' => 3, 'sort' => 'views']));
+$smarty->assign(array_replace($data['common'], $data['category'], ['page' => 3, 'sort' => 'views', 'dir' => 'asc']));
 $html = $smarty->fetch('category.tpl');
-if (!str_contains($html, '?page=4&amp;sort=views') || !str_contains($html, '?page=2&amp;sort=views')) {
-    throw new RuntimeException('Pagination does not retain sorting');
+if (!str_contains($html, '?page=4&amp;sort=views&amp;dir=asc') || !str_contains($html, '?page=2&amp;sort=views&amp;dir=asc')) {
+    throw new RuntimeException('Pagination does not retain sorting and direction');
 }
-echo "Pagination retains sorting OK\n";
+echo "Pagination retains sorting and direction OK\n";

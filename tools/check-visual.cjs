@@ -54,8 +54,8 @@ let browser;
         fullPage: true,
       });
       if (width === 390 && name !== "404") {
-        await page.locator("summary").click();
-        if (!(await page.locator(".header__mobile nav").isVisible()))
+        await page.locator(".header__menu").click();
+        if (!(await page.locator(".header__panel").isVisible()))
           throw Error("Mobile navigation is inaccessible");
       }
       results.push({

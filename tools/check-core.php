@@ -2,6 +2,9 @@
 
 declare(strict_types=1);
 
+// Templates start a CSRF session; buffer output so headers are not "sent" by earlier echo lines.
+ob_start();
+
 use App\Controller\ErrorController;
 use App\Core\Application;
 use App\Core\Config;

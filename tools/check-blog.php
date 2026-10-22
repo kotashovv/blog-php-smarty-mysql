@@ -117,20 +117,29 @@ try {
     }
 
     foreach (['date' => 'p.published_at', 'views' => 'p.views'] as $sort => $column) {
-        foreach ([1, 2, 3] as $page) {
-            $model = $categoryService->page('architecture', ['page' => $page, 'sort' => $sort]);
-            $reference = $pdo->prepare(
-                'SELECT p.id FROM posts p JOIN post_category pc ON pc.post_id = p.id
-                 JOIN categories c ON c.id = pc.category_id WHERE c.slug = :slug
-                 ORDER BY ' . $column . ' DESC, p.id DESC LIMIT 9 OFFSET :offset'
-            );
-            $reference->bindValue('slug', 'architecture');
-            $reference->bindValue('offset', ($page - 1) * 9, PDO::PARAM_INT);
-            $reference->execute();
-            $ids = array_column($model['posts'], 'id');
-            expectBlog($ids === array_map('intval', array_column($reference->fetchAll(), 'id')), 'Category order differs from database');
-            $evidence['category'][$sort][$page] = $ids;
+        foreach (['desc' => 'DESC', 'asc' => 'ASC'] as $direction => $sql) {
+            foreach ([1, 2, 3] as $page) {
+                $model = $categoryService->page('architecture', ['page' => $page, 'sort' => $sort, 'dir' => $direction]);
+                $reference = $pdo->prepare(
+                    'SELECT p.id FROM posts p JOIN post_category pc ON pc.post_id = p.id
+                     JOIN categories c ON c.id = pc.category_id WHERE c.slug = :slug
+                     ORDER BY ' . $column . ' ' . $sql . ', p.id ' . $sql . ' LIMIT 9 OFFSET :offset'
+                );
+                $reference->bindValue('slug', 'architecture');
+                $reference->bindValue('offset', ($page - 1) * 9, PDO::PARAM_INT);
+                $reference->execute();
+                $ids = array_column($model['posts'], 'id');
+                expectBlog($ids === array_map('intval', array_column($reference->fetchAll(), 'id')), 'Category order differs from database');
+                expectBlog($model['dir'] === $direction && $model['sort'] === $sort, 'Sort state not exposed');
+                $evidence['category'][$sort][$direction][$page] = $ids;
+            }
         }
+    }
+    foreach (['asc', 'ASC', 'up; DROP TABLE posts', '', [], null] as $direction) {
+        expectBlog(
+            $categoryService->page('architecture', ['dir' => $direction])['dir'] === ($direction === 'asc' ? 'asc' : 'desc'),
+            'Direction whitelist bypassed'
+        );
     }
     foreach (['0', '-1', 'abc', [], '-99999999999999999999999'] as $page) {
         expectBlog($categoryService->page('architecture', ['page' => $page])['page'] === 1, 'Invalid page normalization');
@@ -175,7 +184,7 @@ try {
         $evidence['related'][$slug] = $ids;
     }
     $log->queries = [];
-    $posts->inCategory($home['categories'][0]['id'], 'views', 9, 0);
+    $posts->inCategory($home['categories'][0]['id'], 'views', 'desc', 9, 0);
     $categoryQuery = $log->queries[0];
     $evidence['explain'] = [
         'home' => explainBlog($pdo, $homeQueries[1]),
@@ -184,7 +193,7 @@ try {
         'related' => explainBlog($pdo, $relatedQuery),
     ];
     $log->queries = [];
-    $posts->inCategory($home['categories'][0]['id'], 'date', 9, 0);
+    $posts->inCategory($home['categories'][0]['id'], 'date', 'desc', 9, 0);
     $evidence['explain']['category_date'] = explainBlog($pdo, $log->queries[0]);
     if (in_array('--exercise-large', $argv, true)) {
         expectBlog(getenv('APP_ENV') === 'development', 'Large probe requires development');
@@ -201,7 +210,7 @@ try {
             }
             foreach (['date', 'views'] as $sort) {
                 $log->queries = [];
-                $posts->inCategory($categoryIds[0], $sort, 9, 0);
+                $posts->inCategory($categoryIds[0], $sort, 'desc', 9, 0);
                 $plan = explainBlog($pdo, $log->queries[0]);
                 $evidence['large_explain'][$sort] = $plan;
                 expectBlog(!in_array('ALL', array_column($plan['plan'], 'type'), true), 'Full table scan on large category data');

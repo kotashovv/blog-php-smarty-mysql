@@ -65,19 +65,41 @@ function ids($, selector) {
   for (const route of routes) await request(route, 200, { method: "HEAD" });
 
   for (const sort of ["date", "views"]) {
-    for (const page of [1, 2, 3]) {
-      const { $ } = await request(
-        `/category/architecture?sort=${sort}&page=${page}`,
-      );
-      assert.deepEqual(
-        ids($, ".category__posts .card"),
-        expected.category[sort][page],
-      );
-      assert.ok($(".pagination a").length > 0);
-      $(".pagination a").each((_, e) =>
-        assert.match($(e).attr("href"), new RegExp(`sort=${sort}$`)),
-      );
+    for (const dir of ["desc", "asc"]) {
+      for (const page of [1, 2, 3]) {
+        const { $ } = await request(
+          `/category/architecture?sort=${sort}&dir=${dir}&page=${page}`,
+        );
+        assert.deepEqual(
+          ids($, ".category__posts .card"),
+          expected.category[sort][dir][page],
+        );
+        assert.ok($(".pagination a").length > 0);
+        $(".pagination a").each((_, e) =>
+          assert.match(
+            $(e).attr("href"),
+            new RegExp(`sort=${sort}&dir=${dir}$`),
+          ),
+        );
+        // The active sort link offers the opposite direction on the next click.
+        assert.match(
+          $(".sort__link[aria-current]").attr("href"),
+          new RegExp(`sort=${sort}&dir=${dir === "desc" ? "asc" : "desc"}$`),
+        );
+        assert.equal(
+          $(".sort__link[aria-current] .sort__arrow").text(),
+          dir === "desc" ? "↓" : "↑",
+        );
+      }
     }
+  }
+  // Header: "Главная" + 3 categories + one "Остальное" dropdown, on every kind of page (not only home).
+  const moreCount = expected.home.length - 3;
+  for (const route of ["/", "/category/architecture", "/category/culture", "/post/modular-monolith"]) {
+    const { $ } = await request(route);
+    assert.equal($(".header__nav > .header__link").length, 4, route);
+    assert.equal($(".header__more-menu .header__link").length, moreCount, route);
+    assert.equal($(".header__panel .header__link").length, 4 + moreCount, route);
   }
   for (const query of [
     "page=0",
@@ -92,10 +114,10 @@ function ids($, selector) {
     const { $ } = await request("/category/architecture?" + query);
     assert.deepEqual(
       ids($, ".category__posts .card"),
-      expected.category.date[1],
+      expected.category.date.desc[1],
       query,
     );
-    assert.equal($(".sort__link[aria-current]").text(), "По дате");
+    assert.equal($(".sort__link[aria-current]").text().trim(), "По дате ↓");
   }
   for (const route of [
     "/category/architecture?page=9999",
@@ -134,12 +156,13 @@ function ids($, selector) {
     String(before.views + 1),
   );
   assert.deepEqual(ids(first.$, ".post-related .card"), expected.related[slug]);
+  // Demo rule: every GET is a view, even with the same session (a refresh counts).
   await request("/post/" + slug, 200, { headers: { cookie } });
-  assert.equal(postState(slug).views, before.views + 1);
-  await request("/post/" + slug);
   assert.equal(postState(slug).views, before.views + 2);
+  await request("/post/" + slug);
+  assert.equal(postState(slug).views, before.views + 3);
 
-  // Multiple first visits to another article share an existing session and its lock.
+  // Parallel refreshes of another article are all counted.
   const parallelSlug = "modular-monolith";
   const parallelBefore = postState(parallelSlug);
   await Promise.all(
@@ -147,7 +170,7 @@ function ids($, selector) {
       request("/post/" + parallelSlug, 200, { headers: { cookie } }),
     ),
   );
-  assert.equal(postState(parallelSlug).views, parallelBefore.views + 1);
+  assert.equal(postState(parallelSlug).views, parallelBefore.views + 6);
   const distinctBefore = postState(slug);
   await Promise.all(Array.from({ length: 6 }, () => request("/post/" + slug)));
   assert.equal(postState(slug).views, distinctBefore.views + 6);
@@ -160,10 +183,12 @@ function ids($, selector) {
   for (const page of [home, first, related]) {
     assert.equal(
       page.$(
-        "script, style, [style], form, figcaption, .post__actions, .newsletter, .header__subscribe",
+        "script, style, [style], figcaption, .post__actions",
       ).length,
       0,
     );
+    assert.equal(page.$(".header__subscribe").length, 1);
+    assert.equal(page.$("form").length, page.$('form[action="/subscribe"]').length);
     assert.equal(page.$("h1").length, 1);
     page
       .$("img")
@@ -181,10 +206,10 @@ function ids($, selector) {
       before: before.views,
       headIncrement: 0,
       firstIncrement: 1,
-      sameSessionIncrement: 0,
+      sameSessionIncrement: 1,
       newSessionIncrement: 1,
       parallelFirstRequests: 6,
-      parallelIncrement: 1,
+      parallelIncrement: 6,
       parallelDistinctSessions: 6,
       distinctSessionIncrement: 6,
     },

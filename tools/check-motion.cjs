@@ -126,7 +126,7 @@ async function ready(page) {
         const mainTop = await page
           .locator("main")
           .evaluate((e) => e.getBoundingClientRect().top);
-        await page.locator("summary").click();
+        await page.locator(".header__menu").click();
         await page.waitForTimeout(50);
         await page.evaluate(() =>
           window.motionRecord.forEach(
@@ -167,7 +167,7 @@ async function ready(page) {
     assert.equal(state.h1Clip, "none");
     assert.equal(state.headerTransform, "none");
     assert.equal(state.overflow, false);
-    await page.locator("summary").click();
+    await page.locator(".header__menu").click();
     assert.equal(await page.evaluate(() => document.getAnimations().length), 0);
     await page.screenshot({ path: `${out}/${name}-390-reduced.png` });
     results.push({ mode: "reduced", name, ...state });
@@ -243,9 +243,9 @@ async function ready(page) {
   const noScriptPage = await noScript.newPage();
   await noScriptPage.goto(base, { waitUntil: "networkidle" });
   await noScriptPage.waitForTimeout(900);
-  await noScriptPage.locator("summary").click();
+  await noScriptPage.locator(".header__menu").click();
   await noScriptPage.waitForTimeout(700);
-  assert.equal(await noScriptPage.locator("details[open]").count(), 1);
+  assert.equal(await noScriptPage.locator(".header__panel:popover-open").count(), 1);
   await noScriptPage.screenshot({ path: `${out}/home-390-no-javascript.png` });
   results.push({ mode: "javascript-disabled", menuOpen: true });
   await noScript.close();
