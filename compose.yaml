@@ -6,6 +6,8 @@ services:
       target: web
     ports: ["8080:80"]
     depends_on: [app]
+    volumes:
+      - uploads:/var/www/html/public/uploads:ro
   app:
     build:
       context: .
@@ -18,6 +20,9 @@ services:
       DB_DATABASE: ${MYSQL_DATABASE:-bento}
       DB_USER: ${MYSQL_USER:-bento}
       DB_PASSWORD: ${MYSQL_PASSWORD:?Set MYSQL_PASSWORD in .env}
+      SEED_DATE: ${SEED_DATE:-}
+    volumes:
+      - uploads:/var/www/html/public/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -40,3 +45,4 @@ services:
       retries: 30
 volumes:
   mysql-data:
+  uploads:
