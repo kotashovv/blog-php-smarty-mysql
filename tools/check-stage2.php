@@ -97,6 +97,9 @@ try {
     expectStageTwo($range['oldest'] >= $options->date->modify('-12 months')->format('Y-m-d'), 'Old publication');
     expectStageTwo($range['newest'] < $options->date->format('Y-m-d'), 'Future publication');
 
+    $titles = rowsStageTwo($pdo, 'SELECT COUNT(DISTINCT title) AS topics FROM posts')[0];
+    expectStageTwo((int) $titles['topics'] >= min(25, $options->posts), 'Not enough distinct topics');
+    expectStageTwo(max(array_column($categoryCounts, 'posts')) < $options->posts, 'One category contains every post');
     $tokens = json_decode(file_get_contents($root . '/design/tokens.json'), true, 512, JSON_THROW_ON_ERROR);
     $palette = array_values($tokens['colors']['tones']);
     $allowed = ['p', 'h2', 'h3', 'ul', 'ol', 'li', 'strong', 'em', 'a', 'blockquote'];
@@ -193,6 +196,7 @@ try {
         'seed_date' => $options->date->format('Y-m-d'),
         'snapshot' => snapshotStageTwo($pdo),
         'category_counts' => $categoryCounts,
+        'distinct_topics' => (int) $titles['topics'],
         'multiple_categories' => $multi,
         'multiple_percent' => round(100 * $multi / $options->posts, 2),
         'single_category' => $single,
