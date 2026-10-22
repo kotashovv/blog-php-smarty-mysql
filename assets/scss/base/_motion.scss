@@ -1,0 +1,58 @@
+@use "../mixins/motion" as motion;
+
+// The resting page is fully visible. Only opted-in keyframes hide content.
+@keyframes mech-left {
+  0% { opacity: 0; transform: translateX(calc(-1 * var(--travel))); }
+  82% { opacity: 1; transform: translateX(var(--latch)); animation-timing-function: var(--ease-dock); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes mech-right {
+  0% { opacity: 0; transform: translateX(var(--travel)); }
+  82% { opacity: 1; transform: translateX(calc(-1 * var(--latch))); animation-timing-function: var(--ease-dock); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes mech-dock {
+  0% { opacity: 0; transform: translateY(var(--travel)); }
+  82% { opacity: 1; transform: translateY(calc(-1 * var(--latch))); animation-timing-function: var(--ease-dock); }
+  100% { opacity: 1; transform: none; }
+}
+@keyframes mech-title {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0); }
+}
+@keyframes mech-header {
+  from { transform: translateY(-100%); }
+  to { transform: none; }
+}
+@keyframes mech-panel {
+  from { clip-path: inset(0 0 100% 0); }
+  to { clip-path: inset(0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .header { @include motion.enter(mech-header, var(--motion-panel)); }
+  .hero-photo { @include motion.enter(mech-left); }
+  .hero-panel, .category__hero { @include motion.enter(mech-right); }
+  .hero-directory { @include motion.enter(mech-dock); animation-delay: var(--stagger); }
+  .post__cover { @include motion.enter(mech-dock); }
+  h1, .section-heading h2 { @include motion.enter(mech-title, var(--motion-panel)); }
+  .bento-grid > .card {
+    @include motion.enter(mech-dock);
+    @include motion.cascade;
+  }
+  .header__mobile[open] > nav {
+    @include motion.enter(mech-panel, var(--motion-panel));
+    > a {
+      @include motion.enter(mech-left, var(--motion-panel));
+      @include motion.cascade;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
