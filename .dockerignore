@@ -5,3 +5,4 @@ var
 tools/visual-output
 .env
 public/assets/css
+public/uploads/seed

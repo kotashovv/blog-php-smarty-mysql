@@ -13,7 +13,11 @@ final class SeedRepository
     {
     }
 
-    /** @param list<array<string, mixed>> $categories @param list<array<string, mixed>> $posts */
+    /**
+     * @param list<array<string, mixed>> $categories
+     * @param list<array<string, mixed>> $posts
+     * @return array<string, int>
+     */
     public function save(array $categories, array $posts, bool $fresh): array
     {
         $this->pdo->beginTransaction();
@@ -53,7 +57,9 @@ final class SeedRepository
             }
             $this->pdo->commit();
         } catch (Throwable $exception) {
-            $this->pdo->rollBack();
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
             throw $exception;
         }
         $statement = $this->pdo->prepare(

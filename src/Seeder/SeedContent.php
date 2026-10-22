@@ -135,7 +135,11 @@ final class SeedContent
             'title' => $title,
             'description' => $description,
             'content' => $content,
-            'views' => match ($number) { 1 => 0, 2 => 5000, default => ($number * 811 + 97) % 5001 },
+            'views' => match ($number) {
+                1 => 0,
+                2 => 5000,
+                default => ($number * 811 + 97) % 5001,
+            },
             'published_at' => $publishedAt,
             'created_at' => $publishedAt,
             'categories' => $assigned,
