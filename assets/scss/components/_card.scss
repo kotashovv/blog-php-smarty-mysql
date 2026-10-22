@@ -1,0 +1,116 @@
+@use "../mixins/chamfer" as c;
+@use "../tokens/colors";
+@use "../tokens/spacing" as s;
+.card {
+  @include c.chamfer(var(--chamfer-md));
+  display: flex;
+  flex-direction: column;
+  min-height: s.$card-height;
+  @each $tone, $color in colors.$tones {
+    &--#{$tone} {
+      background: $color;
+    }
+  }
+  &--ink {
+    color: var(--tone-white);
+  }
+  &__body {
+    padding: var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+    flex: 1;
+  }
+  &__top {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+    justify-content: space-between;
+    font: var(--font-small)/var(--line-ui) var(--font-code);
+    text-transform: uppercase;
+  }
+  &__copy {
+    margin-block: auto;
+  }
+  &__title {
+    font-size: var(--font-card);
+    a:hover {
+      text-decoration: underline;
+    }
+  }
+  &__excerpt {
+    margin-top: var(--space-2);
+    font-size: var(--font-small);
+  }
+  &__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: end;
+    gap: var(--space-4);
+    font: var(--weight-bold) var(--font-small)/var(--line-ui) var(--font-code);
+    text-transform: uppercase;
+  }
+  &__image {
+    width: 100%;
+    height: s.$card-image-height;
+    object-fit: cover;
+  }
+  &--large &__body {
+    padding: var(--space-8);
+  }
+  &--large &__title {
+    font-size: var(--font-medium);
+  }
+  &--photo {
+    background: var(--tone-white);
+  }
+}
+.card--editorial {
+  min-height: s.$editorial-card-height;
+  .card__title {
+    font-size: var(--font-title);
+  }
+  .card__excerpt {
+    display: none;
+  }
+  .card__top {
+    font-size: var(--font-label);
+  }
+  .card__top .label {
+    background: transparent;
+    padding: 0;
+    clip-path: none;
+  }
+  .card__bottom {
+    padding-top: var(--space-4);
+    border-top: var(--border) solid var(--color-ink);
+    font-size: var(--font-label);
+  }
+  &.card--photo {
+    position: relative;
+    justify-content: end;
+    .card__image {
+      position: absolute;
+      inset: 0;
+      height: 100%;
+      filter: grayscale(1);
+    }
+    .card__body {
+      @include c.chamfer(var(--chamfer-md));
+      position: relative;
+      flex: none;
+      margin: var(--space-5);
+      padding: var(--space-5);
+      background: var(--color-bg);
+      gap: var(--space-2);
+    }
+    .card__bottom {
+      display: none;
+    }
+    .card__copy {
+      margin: 0;
+    }
+  }
+}

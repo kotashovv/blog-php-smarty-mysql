@@ -1,0 +1,24 @@
+@use "../mixins/chamfer" as c;
+.sort {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  &__link {
+    @include c.chamfer(var(--chamfer-sm));
+    padding: var(--space-2) var(--space-5);
+    background: var(--tone-white);
+    font-size: var(--font-label);
+    text-transform: uppercase;
+    &:hover {
+      background: var(--tone-blue);
+    }
+    &--active {
+      background: var(--color-ink);
+      color: var(--tone-white);
+    }
+    &:focus-visible {
+      outline: none;
+      text-decoration: underline;
+    }
+  }
+}

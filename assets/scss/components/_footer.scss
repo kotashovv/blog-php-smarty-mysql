@@ -1,0 +1,28 @@
+@use "../mixins/breakpoints" as bp;
+.footer {
+  margin-top: var(--space-12);
+  border-top: var(--border) solid var(--color-ink);
+  &__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-6);
+    padding-block: var(--space-8);
+    font: var(--font-small)/var(--line-ui) var(--font-code);
+  }
+  &__brand {
+    font-family: var(--font-headline);
+    font-weight: var(--weight-black);
+    font-size: var(--font-title);
+  }
+  &__nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+    font: var(--font-label)/var(--line-ui) var(--font-ui);
+    text-transform: uppercase;
+    @include bp.up(tablet) {
+      margin-left: auto;
+    }
+  }
+}

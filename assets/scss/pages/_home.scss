@@ -1,0 +1,33 @@
+@use "../mixins/breakpoints" as bp;
+.home {
+  display: grid;
+  gap: var(--space-12);
+  padding-block: var(--space-8);
+  &__intro {
+    display: flex;
+    flex-direction: column;
+    gap: var(--grid-gap-large);
+  }
+  &__hero {
+    gap: var(--grid-gap-large);
+    @include bp.up(desktop) {
+      > :first-child {
+        grid-column: span 5;
+      }
+      > :last-child {
+        grid-column: span 7;
+      }
+    }
+  }
+  &__posts {
+    gap: var(--grid-gap-large);
+    @include bp.up(tablet) {
+      > * {
+        grid-column: span 3;
+      }
+      > :first-child {
+        grid-column: span 6;
+      }
+    }
+  }
+}

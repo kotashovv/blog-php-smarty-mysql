@@ -1,0 +1,32 @@
+@use "../mixins/chamfer" as c;
+.button {
+  @include c.chamfer(var(--chamfer-sm));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5);
+  background: var(--color-ink);
+  color: var(--tone-white);
+  border: var(--border) solid var(--color-ink);
+  font: var(--weight-heavy) var(--font-label)/var(--line-ui) var(--font-ui);
+  text-transform: uppercase;
+  transition:
+    background var(--transition),
+    color var(--transition);
+  &:hover {
+    background: var(--tone-lime);
+    color: var(--color-ink);
+  }
+  &:focus-visible {
+    outline: none;
+    text-decoration: underline;
+    text-underline-offset: var(--space-1);
+    background: var(--tone-blue);
+    color: var(--color-ink);
+  }
+  &--secondary {
+    background: var(--tone-white);
+    color: var(--color-ink);
+  }
+}

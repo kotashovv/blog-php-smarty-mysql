@@ -1,0 +1,19 @@
+@use "../mixins/chamfer" as c;
+.label {
+  font: var(--weight-bold) var(--font-label)/var(--line-ui) var(--font-ui);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+}
+.card__top .label,
+.category__eyebrow > .label:first-child,
+.error-page__panel > .error-page__strip > .label:first-child,
+.hero-photo .label {
+  @include c.chamfer(var(--chamfer-sm));
+  background: var(--tone-white);
+  color: var(--color-ink);
+  padding: var(--space-2) var(--space-3);
+}
+.label--dark {
+  background: var(--color-ink) !important;
+  color: var(--tone-white) !important;
+}

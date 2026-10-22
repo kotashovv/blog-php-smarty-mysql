@@ -1,0 +1,53 @@
+@use "../mixins/breakpoints" as bp;
+@use "../tokens/spacing" as s;
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--color-bg);
+  &__inner {
+    min-height: s.$header-height;
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+    border-bottom: var(--border) solid var(--color-ink);
+    flex-wrap: wrap;
+  }
+  &__brand {
+    font-family: var(--font-headline);
+    font-weight: var(--weight-black);
+    font-size: var(--font-card);
+  }
+  &__nav {
+    display: none;
+    @include bp.up(desktop) {
+      display: flex;
+      flex: 1;
+      align-items: center;
+      gap: var(--space-3);
+    }
+  }
+  &__link {
+    display: block;
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-label);
+    text-transform: uppercase;
+    &[aria-current] {
+      background: var(--color-ink);
+      color: var(--tone-white);
+    }
+  }
+  &__subscribe {
+    margin-left: auto;
+  }
+  &__mobile {
+    width: 100%;
+    margin-bottom: var(--space-3);
+    summary {
+      font-size: var(--font-small);
+    }
+    @include bp.up(desktop) {
+      display: none;
+    }
+  }
+}

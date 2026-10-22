@@ -1,0 +1,31 @@
+@use "../mixins/chamfer" as c;
+.pagination {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-4);
+  padding-block: var(--space-12);
+  font: var(--font-small)/var(--line-ui) var(--font-code);
+  &__links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+  }
+  &__link {
+    @include c.chamfer(var(--chamfer-sm));
+    padding: var(--space-4) var(--space-5);
+    background: var(--tone-white);
+    &--active {
+      color: var(--tone-white);
+      background: var(--color-ink);
+    }
+    &:hover {
+      background: var(--tone-blue);
+      color: var(--color-ink);
+    }
+    &:focus-visible {
+      outline: none;
+      text-decoration: underline;
+    }
+  }
+}

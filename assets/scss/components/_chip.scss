@@ -1,0 +1,21 @@
+@use "../mixins/chamfer" as c;
+.chip {
+  @include c.chamfer(var(--chamfer-sm));
+  display: inline-block;
+  background: var(--tone-white);
+  color: var(--color-ink);
+  padding: var(--space-2) var(--space-4);
+  font: var(--weight-heavy) var(--font-label)/var(--line-ui) var(--font-ui);
+  text-transform: uppercase;
+  &:hover,
+  &--active {
+    background: var(--color-ink);
+    color: var(--tone-white);
+  }
+  &:focus-visible {
+    outline: none;
+    text-decoration: underline;
+    background: var(--tone-blue);
+    color: var(--color-ink);
+  }
+}

@@ -1,0 +1,127 @@
+@use "../mixins/breakpoints" as bp;
+@use "../mixins/chamfer" as c;
+@use "../tokens/spacing" as s;
+.post {
+  &__header {
+    padding-block: var(--space-8);
+  }
+  &__heading {
+    display: grid;
+    gap: var(--space-5);
+    margin-top: var(--space-8);
+    h1 {
+      font-size: var(--font-medium);
+      @include bp.up(desktop) {
+        font-size: s.$post-title;
+      }
+    }
+  }
+  &__lead {
+    font-size: var(--font-card);
+    max-width: var(--article-measure);
+  }
+  &__meta {
+    padding-top: var(--space-3);
+    border-top: var(--border) solid var(--color-ink);
+    font: var(--font-small)/var(--line-ui) var(--font-code);
+    text-transform: uppercase;
+  }
+  &__figure {
+    margin-block: var(--space-5);
+    figcaption {
+      margin-top: var(--space-3);
+      font: var(--font-small)/var(--line-ui) var(--font-code);
+      text-transform: uppercase;
+    }
+  }
+  &__cover {
+    @include c.chamfer(var(--chamfer-lg));
+    width: 100%;
+    object-fit: cover;
+    height: s.$cover-mobile-height;
+    @include bp.up(tablet) {
+      height: s.$cover-height;
+    }
+  }
+  &__body,
+  &__actions {
+    width: 100%;
+    max-width: calc(var(--article-measure) + var(--space-8));
+    padding: var(--space-8) var(--space-4);
+    margin-inline: auto;
+  }
+  &__body {
+    font: var(--font-article)/var(--line-article) var(--family-article);
+    font-size: var(--font-article);
+    > * + * {
+      margin-top: var(--space-6);
+    }
+    h2,
+    h3 {
+      margin-top: var(--space-8);
+    }
+    h2 {
+      font-size: var(--font-medium);
+    }
+    h3 {
+      font-size: var(--font-card);
+    }
+    a {
+      text-decoration: underline;
+      text-underline-offset: var(--space-1);
+    }
+    blockquote {
+      @include c.chamfer(var(--chamfer-md));
+      padding: var(--space-8);
+      background: var(--tone-lime);
+      font: var(--weight-heavy) var(--font-card)/var(--line-ui)
+        var(--font-headline);
+    }
+    ul {
+      list-style: "/  ";
+    }
+    ol {
+      list-style: decimal-leading-zero;
+    }
+    li + li {
+      margin-top: var(--space-4);
+    }
+    img {
+      width: 100%;
+    }
+    .article-callout {
+      @include c.chamfer(var(--chamfer-md));
+      background: var(--tone-blue);
+      padding: var(--space-8);
+    }
+  }
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-4);
+    border-top: var(--border) solid var(--color-ink);
+    > div {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+    }
+  }
+}
+.post-related {
+  padding-block: var(--space-12);
+  &__grid {
+    @include bp.up(tablet) {
+      > * {
+        grid-column: span 4;
+      }
+    }
+  }
+}
+.post__body .article-principle {
+  @include c.chamfer(var(--chamfer-mobile));
+  padding: var(--space-5);
+  background: var(--tone-white);
+  font-family: var(--font-ui);
+  font-size: var(--font-base);
+}

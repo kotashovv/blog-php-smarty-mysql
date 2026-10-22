@@ -1,0 +1,91 @@
+@use "../mixins/chamfer" as c;
+@use "../mixins/breakpoints" as bp;
+@use "../tokens/spacing" as s;
+.hero-photo {
+  @include c.chamfer(var(--chamfer-lg));
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: s.$hero-height;
+  padding: var(--space-8);
+  background: var(--color-ink);
+  img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(1);
+  }
+  &__top,
+  &__caption {
+    position: relative;
+  }
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+  &__caption {
+    @include c.chamfer(var(--chamfer-md));
+    background: var(--color-bg);
+    padding: var(--space-5);
+    h2 {
+      font-size: var(--font-card);
+      margin-top: var(--space-2);
+    }
+  }
+}
+.hero-panel {
+  @include c.chamfer(var(--chamfer-lg));
+  background: var(--tone-lime);
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  flex: 1;
+  h1 {
+    font-size: var(--font-medium);
+    @include bp.up(desktop) {
+      font-size: var(--font-section);
+    }
+  }
+  &__action {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    align-items: center;
+    margin-top: auto;
+    padding-top: var(--space-4);
+  }
+}
+.hero-directory {
+  @include c.chamfer(var(--chamfer-lg));
+  background: var(--tone-yellow);
+  padding: var(--space-8);
+  &__chips,
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    align-items: center;
+  }
+  &__meta {
+    justify-content: space-between;
+    border-top: var(--border) solid var(--color-ink);
+    margin-top: var(--space-4);
+    padding-top: var(--space-4);
+  }
+}
+.category-hero {
+  @include c.chamfer(var(--chamfer-lg));
+  background: var(--tone-lavender);
+  padding: var(--space-8);
+  @include bp.up(desktop) {
+    padding: var(--space-12);
+  }
+}
+.newsletter {
+  @include c.chamfer(var(--chamfer-lg));
+}

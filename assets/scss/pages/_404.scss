@@ -1,0 +1,90 @@
+@use "../mixins/chamfer" as c;
+@use "../mixins/breakpoints" as bp;
+@use "../tokens/spacing" as s;
+@use "../tokens/colors";
+.error-page {
+  max-width: s.$error-width;
+  min-height: 100svh;
+  margin-inline: auto;
+  padding: var(--space-8) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-4);
+  &__strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: space-between;
+  }
+  &__panel {
+    @include c.chamfer(var(--chamfer-lg));
+    background: var(--tone-lime);
+    padding: var(--space-8);
+    display: grid;
+    gap: var(--space-6);
+    h1 {
+      font-size: s.$error-display;
+    }
+    h2 {
+      font-size: var(--font-card);
+      @include bp.up(tablet) {
+        font-size: var(--font-medium);
+      }
+    }
+    p {
+      max-width: var(--article-measure);
+    }
+    @include bp.up(tablet) {
+      padding: var(--space-12);
+    }
+  }
+  &__action {
+    border-top: var(--border) solid var(--color-ink);
+    padding-top: var(--space-6);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+    align-items: center;
+    justify-content: space-between;
+  }
+  &__links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+    @include bp.up(tablet) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+  &__link {
+    @include c.chamfer(var(--chamfer-sm));
+    min-height: s.$error-link-height;
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-2);
+    strong {
+      font: var(--weight-heavy) var(--font-small)/var(--line-ui)
+        var(--font-headline);
+      overflow-wrap: anywhere;
+      text-transform: uppercase;
+    }
+    @each $tone, $color in colors.$tones {
+      &--#{$tone} {
+        background: $color;
+      }
+    }
+    &:hover {
+      background: var(--color-ink);
+      color: var(--tone-white);
+    }
+    &:focus-visible {
+      outline: none;
+      text-decoration: underline;
+    }
+  }
+  > footer {
+    margin-top: var(--space-6);
+  }
+}

@@ -1,0 +1,79 @@
+@use "../mixins/breakpoints" as bp;
+.container {
+  width: 100%;
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+  @include bp.up(tablet) {
+    padding-inline: var(--space-6);
+  }
+  @include bp.up(desktop) {
+    padding-inline: var(--space-10);
+  }
+}
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--grid-gap);
+  > * {
+    min-width: 0;
+    grid-column: span 12;
+  }
+}
+.site-main {
+  min-height: 60vh;
+}
+.skip-link {
+  position: fixed;
+  inset-inline-start: var(--space-4);
+  top: var(--space-4);
+  z-index: 100;
+  padding: var(--space-4);
+  color: var(--tone-white);
+  background: var(--color-ink);
+  transform: translateY(-200%);
+  &:focus {
+    transform: none;
+  }
+}
+.section-heading {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  justify-content: space-between;
+  align-items: end;
+  margin-bottom: var(--space-6);
+  h2 {
+    margin-top: var(--space-2);
+    font-size: var(--font-medium);
+  }
+}
+.newsletter {
+  display: grid;
+  gap: var(--space-8);
+  padding: var(--space-8);
+  border: var(--border) solid var(--color-ink);
+  background: var(--tone-white);
+  h2 {
+    margin-block: var(--space-4);
+  }
+  @include bp.up(desktop) {
+    grid-template-columns: 1fr 1fr;
+    padding: var(--space-12);
+  }
+}
+.newsletter__form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  label,
+  p {
+    grid-column: 1 / -1;
+    font-size: var(--font-label);
+  }
+  input {
+    min-width: 0;
+    padding: var(--space-3);
+    border: var(--border) solid var(--color-ink);
+  }
+}
