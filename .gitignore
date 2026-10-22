@@ -1,0 +1,6 @@
+/node_modules/
+/vendor/
+/var/
+/public/assets/css/*.map
+/tools/visual-output/
+.env
