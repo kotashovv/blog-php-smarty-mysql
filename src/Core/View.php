@@ -37,10 +37,9 @@ final class View
     /** @param array<string, mixed> $data */
     public function render(string $template, array $data, int $status = 200): Response
     {
-        $this->smarty->clearAllAssign();
-        $this->smarty->assign($data);
-        $this->smarty->assign('tones', ['lime', 'blue', 'lavender', 'yellow']);
+        $page = $this->smarty->createTemplate($template);
+        $page->assign($data);
 
-        return new Response($this->smarty->fetch($template), $status);
+        return new Response($page->fetch(), $status);
     }
 }

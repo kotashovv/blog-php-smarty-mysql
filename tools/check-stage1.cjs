@@ -54,7 +54,7 @@ const base = process.env.PREVIEW_URL || "http://127.0.0.1:8080";
   }
   const post = await fetch(base + "/", { method: "POST" });
   assert.equal(post.status, 405);
-  assert.equal(post.headers.get("allow"), "GET");
+  assert.equal(post.headers.get("allow"), "GET, HEAD");
   results.push({ url: "POST /", status: post.status });
   fs.mkdirSync("var", { recursive: true });
   fs.writeFileSync(

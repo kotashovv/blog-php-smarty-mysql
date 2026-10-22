@@ -36,7 +36,7 @@ final class Router
             if (preg_match($route['pattern'], $path, $matches) !== 1) {
                 continue;
             }
-            if ($method !== 'GET') {
+            if ($method !== 'GET' && $method !== 'HEAD') {
                 throw new MethodNotAllowedException();
             }
             $parameters = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);

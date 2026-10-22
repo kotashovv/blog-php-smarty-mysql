@@ -16,15 +16,17 @@ final class Application
     public function handle(string $method, string $uri): Response
     {
         try {
-            return $this->router->dispatch($method, $uri);
+            $response = $this->router->dispatch($method, $uri);
         } catch (NotFoundException) {
-            return $this->errors->notFound();
+            $response = $this->errors->notFound();
         } catch (MethodNotAllowedException) {
-            return $this->errors->methodNotAllowed();
+            $response = $this->errors->methodNotAllowed();
         } catch (Throwable $exception) {
             error_log((string) $exception);
 
-            return $this->errors->serverError();
+            $response = $this->errors->serverError();
         }
+
+        return $method === 'HEAD' ? $response->withoutBody() : $response;
     }
 }

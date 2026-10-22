@@ -10,7 +10,9 @@ set_exception_handler(static function (Throwable $exception): void {
     error_log((string) $exception);
     http_response_code(500);
     header('Content-Type: text/plain; charset=utf-8');
-    echo 'Внутренняя ошибка сервера. Попробуйте позже.';
+    if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'HEAD') {
+        echo 'Внутренняя ошибка сервера. Попробуйте позже.';
+    }
 });
 
 require dirname(__DIR__) . '/vendor/autoload.php';

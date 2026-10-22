@@ -26,9 +26,9 @@ final class ErrorController
 
     public function methodNotAllowed(): Response
     {
-        $response = $this->error(405, 'Метод не поддерживается', 'Для просмотра страницы используйте GET.');
+        $response = $this->error(405, 'Метод не поддерживается', 'Для просмотра страницы используйте GET или HEAD.');
 
-        return new Response($response->body, 405, $response->headers + ['Allow' => 'GET']);
+        return new Response($response->body, 405, $response->headers + ['Allow' => 'GET, HEAD']);
     }
 
     private function error(int $status, string $title, string $description): Response

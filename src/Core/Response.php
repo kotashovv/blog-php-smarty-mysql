@@ -14,6 +14,11 @@ final class Response
     ) {
     }
 
+    public function withoutBody(): self
+    {
+        return new self('', $this->status, $this->headers);
+    }
+
     public function send(): void
     {
         http_response_code($this->status);
