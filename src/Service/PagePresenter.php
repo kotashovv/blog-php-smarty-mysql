@@ -9,6 +9,8 @@ use App\Model\Category;
 /** Interface copy and formatting live here, never in SQL or demo fixtures. */
 final class PagePresenter
 {
+    private const NAV_VISIBLE = 3;
+
     public static function category(Category $category): array
     {
         return [
@@ -24,11 +26,14 @@ final class PagePresenter
     /** @param list<Category> $categories */
     public function common(string $title, string $description, array $categories = [], string $active = ''): array
     {
-        $links = array_map(self::category(...), $categories);
+        $links = array_map(
+            static fn (array $link): array => array_replace($link, ['active' => $active === $link['url']]),
+            array_map(self::category(...), $categories)
+        );
+        // Header: "Главная" + the first three categories; the rest hide under a hover dropdown.
         $navigation = [['label' => 'Главная', 'url' => '/', 'active' => $active === '/']];
-        foreach (array_slice($links, 0, 3) as $link) {
-            $navigation[] = array_replace($link, ['active' => $active === $link['url']]);
-        }
+        array_push($navigation, ...array_slice($links, 0, self::NAV_VISIBLE));
+        $more = array_slice($links, self::NAV_VISIBLE);
 
         return [
             'meta' => ['title' => $title . ' / Блог', 'description' => $description],
@@ -38,17 +43,26 @@ final class PagePresenter
             ],
             'ui' => [
                 'skipContent' => 'К содержимому', 'mainNavigation' => 'Основная навигация',
-                'footerNavigation' => 'Разделы блога', 'menu' => 'Меню /', 'categories' => 'Категории',
+                'footerNavigation' => 'Разделы блога', 'menu' => 'Меню', 'openMenu' => 'Открыть меню', 'subscribe' => 'Подписаться',
+                'close' => 'Закрыть', 'categories' => 'Категории',
                 'allPosts' => 'Все статьи', 'breadcrumbs' => 'Путь к странице', 'page' => 'Страница',
                 'pagination' => 'Страницы категории', 'previous' => 'Назад', 'next' => 'Далее',
-                'noPosts' => 'В этой категории пока нет статей.', 'sortLabel' => 'Сортировка статей',
+                'noPosts' => 'В этой категории пока нет статей.', 'sortLabel' => 'Сортировка статей', 'moreLabel' => 'Остальные категории',
                 'relatedPosts' => 'Похожие статьи',
             ],
-            'navigation' => $navigation,
-            'footerLinks' => $links,
-            'sortOptions' => [
-                ['value' => 'date', 'label' => 'По дате'], ['value' => 'views', 'label' => 'По просмотрам'],
+            'newsletter' => [
+                'action' => '/subscribe', 'label' => 'Рассылка / новые статьи', 'title' => 'Новые статьи на почту',
+                'description' => 'Раз в неделю присылаем подборку свежих материалов. Без спама, отписаться можно в любой момент.',
+                'emailLabel' => 'Электронная почта', 'placeholder' => 'name@example.com', 'submitLabel' => 'Подписаться',
+                'consent' => 'Отправляя форму, вы соглашаетесь получать письма с новыми статьями.',
             ],
+            'navigation' => $navigation,
+            'navigationMore' => [
+                'label' => 'Остальное', 'items' => $more,
+                'active' => in_array(true, array_column($more, 'active'), true),
+            ],
+            'navigationAll' => [...$navigation, ...$more],
+            'footerLinks' => $links,
         ];
     }
 

@@ -4,6 +4,9 @@
   flex-wrap: wrap;
   gap: var(--space-2);
   &__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
     @include c.chamfer(var(--chamfer-sm));
     padding: var(--space-2) var(--space-5);
     background: var(--tone-white);
@@ -17,5 +20,12 @@
       outline: none;
       text-decoration: underline;
     }
+  }
+  // The arrow shows the order a click leads to for inactive links, and the current order for the active one.
+  &__arrow {
+    opacity: 0.45;
+  }
+  &__link--active &__arrow {
+    opacity: 1;
   }
 }

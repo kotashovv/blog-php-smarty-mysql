@@ -46,13 +46,15 @@ final class PostRepository
     }
 
     /** @return list<Post> */
-    public function inCategory(int $categoryId, string $sort, int $limit, int $offset): array
+    public function inCategory(int $categoryId, string $sort, string $direction, int $limit, int $offset): array
     {
+        // Column and direction come from whitelists only: identifiers cannot be bound as parameters.
         $order = self::SORTS[$sort] ?? self::SORTS['date'];
+        $dir = $direction === 'asc' ? 'ASC' : 'DESC';
         $statement = $this->pdo->prepare(
             'SELECT p.* FROM posts p JOIN post_category pc ON pc.post_id = p.id
              WHERE pc.category_id = :category_id
-             ORDER BY ' . $order . ' DESC, p.id DESC LIMIT :limit OFFSET :offset'
+             ORDER BY ' . $order . ' ' . $dir . ', p.id ' . $dir . ' LIMIT :limit OFFSET :offset'
         );
         $statement->bindValue('category_id', $categoryId, PDO::PARAM_INT);
         $statement->bindValue('limit', $limit, PDO::PARAM_INT);

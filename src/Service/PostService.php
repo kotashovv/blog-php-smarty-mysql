@@ -33,7 +33,7 @@ final class PostService
         }
         $breadcrumbs[] = ['label' => $post->title, 'url' => '/post/' . $post->slug];
 
-        return $this->pages->common($post->title, $post->description, $postCategories) + [
+        return $this->pages->common($post->title, $post->description, $this->categories->withPosts()) + [
             'post' => $this->presenter->present($post, $postCategories, (int) $added),
             'relatedPosts' => $this->presenter->collection($related, $categories),
             'breadcrumbs' => $breadcrumbs,

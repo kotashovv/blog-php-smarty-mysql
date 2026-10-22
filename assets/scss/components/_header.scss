@@ -1,19 +1,45 @@
 @use "../mixins/breakpoints" as bp;
-@use "../tokens/spacing" as s;
+@use "../mixins/chamfer" as c;
+@mixin more-open {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+  transition-delay: 0s;
+  .header__more-list .header__link {
+    opacity: 1;
+    transform: none;
+    @for $step from 1 through 8 {
+      &:nth-child(#{$step}) {
+        transition-delay: calc(#{$step - 1} * 30ms);
+      }
+    }
+  }
+}
 .header {
   position: sticky;
   top: 0;
   z-index: 20;
   background: var(--color-bg);
+  @supports (backdrop-filter: blur(1px)) and (background: color-mix(in srgb, red 50%, transparent)) {
+    background: color-mix(in srgb, var(--color-bg) 78%, transparent);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
   &__inner {
-    min-height: s.$header-height;
+    min-height: var(--header-height);
     display: flex;
     align-items: center;
-    gap: var(--space-6);
+    gap: var(--space-3);
+    padding-block: var(--space-3);
     border-bottom: var(--border) solid var(--color-ink);
-    flex-wrap: wrap;
+    @include bp.up(tablet) {
+      gap: var(--space-6);
+    }
   }
   &__brand {
+    flex-shrink: 0;
+    white-space: nowrap;
     font-family: var(--font-headline);
     font-weight: var(--weight-black);
     font-size: var(--font-card);
@@ -37,22 +63,139 @@
       color: var(--tone-white);
     }
   }
-  &__mobile {
-    width: 100%;
-    margin-bottom: var(--space-3);
-    summary {
-      font-size: var(--font-small);
+  // "Остальное": categories beyond the first three, revealed on hover or keyboard focus (no JS).
+  &__more {
+    position: relative;
+  }
+  &__more-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: var(--font-label);
+    text-transform: uppercase;
+    cursor: pointer;
+    span {
+      display: inline-block;
+      transition: transform var(--motion-fast) var(--ease-mech);
     }
-    > nav {
-      position: absolute;
-      inset-inline: 0;
-      top: 100%;
-      padding: var(--space-4);
-      border-bottom: var(--border) solid var(--color-ink);
-      background: var(--color-bg);
+  }
+  &__more-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 2;
+    min-width: 15rem;
+    // The transparent top padding bridges the gap, so the pointer never leaves the hover area.
+    padding-top: var(--space-2);
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px);
+    transform-origin: top left;
+    transition:
+      opacity var(--motion-fast) var(--ease-mech),
+      transform var(--motion-fast) var(--ease-mech),
+      visibility 0s linear var(--motion-fast);
+  }
+  &__more-list {
+    @include c.chamfer(var(--chamfer-md));
+    padding: var(--space-2);
+    border: var(--border) solid var(--color-ink);
+    background: var(--tone-white);
+    .header__link {
+      white-space: nowrap;
+      padding: var(--space-3) var(--space-4);
+      opacity: 0;
+      transform: translateX(-10px);
+      transition:
+        opacity var(--motion-fast) var(--ease-dock),
+        transform var(--motion-fast) var(--ease-dock);
+    }
+    .header__link + .header__link {
+      border-top: var(--border) solid var(--color-ink);
+    }
+  }
+  &__more:focus-within &__more-menu {
+    @include more-open;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    &__more:hover &__more-menu {
+      @include more-open;
+    }
+  }
+  // Two classes: .button (loaded later) must not reset the header sizing.
+  &__subscribe.button {
+    flex-shrink: 0;
+    margin-left: auto;
+    min-height: 3rem;
+    padding-inline: var(--space-4);
+    white-space: nowrap;
+    @include bp.up(desktop) {
+      margin-left: 0;
+      padding-inline: var(--space-5);
+    }
+  }
+  &__menu {
+    @include c.chamfer(var(--chamfer-sm));
+    flex-shrink: 0;
+    min-width: 5rem;
+    min-height: 3rem;
+    padding: var(--space-3) var(--space-5);
+    border: var(--border) solid var(--color-ink);
+    background: var(--tone-white);
+    color: var(--color-ink);
+    font: var(--weight-heavy) var(--font-small)/var(--line-ui) var(--font-ui);
+    text-transform: uppercase;
+    cursor: pointer;
+    @include bp.up(desktop) {
+      display: none;
+    }
+  }
+  // Mobile menu: a panel under the right thumb, opened by the declarative popover API (no JS).
+  &__panel {
+    @include c.chamfer(var(--chamfer-md));
+    position: fixed;
+    inset: auto;
+    top: calc(var(--header-height) + var(--space-2));
+    right: var(--space-4);
+    margin: 0;
+    width: min(calc(100vw - var(--space-8)), 20rem);
+    max-height: calc(100dvh - var(--header-height) - var(--space-8));
+    overflow-y: auto;
+    padding: var(--space-2);
+    border: var(--border) solid var(--color-ink);
+    background: var(--tone-white);
+    color: var(--color-ink);
+    .header__link {
+      display: flex;
+      align-items: center;
+      min-height: 3.5rem;
+      padding: var(--space-3) var(--space-4);
+      font: var(--weight-heavy) var(--font-title)/var(--line-ui) var(--font-ui);
+    }
+    .header__link + .header__link {
+      border-top: var(--border) solid var(--color-ink);
     }
     @include bp.up(desktop) {
       display: none;
     }
+  }
+}
+body:has(.header__panel:popover-open) .header__menu {
+  background: var(--color-ink);
+  color: var(--tone-white);
+}
+
+.header__more:is(:hover, :focus-within) .header__more-toggle span {
+  transform: rotate(180deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .header__more-menu,
+  .header__more-list .header__link {
+    transition: none;
   }
 }

@@ -42,8 +42,12 @@ final class HomeService
         );
         $hero = $newest === [] ? null : $this->presenter->present($newest[0], $postCategories[$newest[0]->id] ?? []);
 
+        // Between the sections, never first or last; with fewer than three sections it closes the page.
+        $count = count($sections);
+        $newsletterAfter = $count >= 3 ? intdiv($count + 1, 2) : $count;
+
         return $this->pages->common('Статьи о цифровых системах', 'Архитектура, дизайн и инженерная практика.', $categories, '/') + [
-            'hero' => $hero, 'categories' => $sections,
+            'hero' => $hero, 'categories' => $sections, 'newsletterAfter' => $newsletterAfter,
             'categoryChips' => array_map(PagePresenter::category(...), $categories),
         ];
     }

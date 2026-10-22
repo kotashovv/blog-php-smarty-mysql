@@ -62,18 +62,3 @@
     padding: var(--space-12);
   }
 }
-.newsletter__form {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: var(--space-3);
-  label,
-  p {
-    grid-column: 1 / -1;
-    font-size: var(--font-label);
-  }
-  input {
-    min-width: 0;
-    padding: var(--space-3);
-    border: var(--border) solid var(--color-ink);
-  }
-}

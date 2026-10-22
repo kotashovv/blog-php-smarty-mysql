@@ -16,6 +16,8 @@
   <section class="home__section" data-category-id="{$category.id}"><header class="section-heading"><h2>{$category.title}</h2><a class="button button--secondary" href="{$category.url}">{$ui.allPosts} <span aria-hidden="true">→</span></a></header>
     {include file="partials/post-grid.tpl" posts=$category.posts gridClass='home__posts'}
   </section>
+  {if $category@iteration == $newsletterAfter}{include file="partials/newsletter.tpl"}{/if}
   {/foreach}
+  {if !$categories}{include file="partials/newsletter.tpl"}{/if}
 </div>
 {/block}
