@@ -18,12 +18,15 @@ if (PHP_SAPI !== 'cli') {
 if (array_slice($argv, 1) === ['--help']) {
     fwrite(STDOUT, "Usage: php bin/seed.php [--fresh] [--categories=6] [--posts=40]\n");
     fwrite(STDOUT, "Minimum: 4 categories, 12 posts. Optional SEED_DATE=YYYY-MM-DD (default: today UTC).\n");
-    fwrite(STDOUT, "--fresh deletes all blog rows and recreates them; normal runs preserve existing rows.\n");
+    fwrite(STDOUT, "--fresh requires APP_ENV=development; deletes all blog rows and recreates them; normal runs preserve existing rows.\n");
     exit(0);
 }
 
 try {
     $options = SeedOptions::fromArguments(array_slice($argv, 1));
+    if ($options->fresh && getenv('APP_ENV') !== 'development') {
+        throw new RuntimeException('--fresh requires APP_ENV=development.');
+    }
     $config = new Config(dirname(__DIR__));
     $seeder = new BlogSeeder(
         new SeedRepository((new Database($config))->connection()),

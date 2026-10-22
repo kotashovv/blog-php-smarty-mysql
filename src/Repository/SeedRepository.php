@@ -20,6 +20,9 @@ final class SeedRepository
      */
     public function save(array $categories, array $posts, bool $fresh): array
     {
+        if ($fresh && getenv('APP_ENV') !== 'development') {
+            throw new \RuntimeException('--fresh requires APP_ENV=development.');
+        }
         $this->pdo->beginTransaction();
         try {
             if ($fresh) {
