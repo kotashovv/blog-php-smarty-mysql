@@ -52,10 +52,12 @@ $originalLog = ini_get('error_log');
 ini_set('error_log', $logPath);
 try {
     $response = $application->handle('GET', '/failure');
+    $headFailure = $application->handle('HEAD', '/failure');
 } finally {
     ini_set('error_log', $originalLog);
 }
 check($response->status === 500, 'Server error status');
+check($headFailure->status === 500 && $headFailure->body === '', 'HEAD 500 has no body');
 check(str_contains($response->body, 'Внутренняя ошибка сервера'), 'Server error template');
 check(!str_contains($response->body, 'PRIVATE-DETAIL'), 'Exception details leaked');
 check(str_contains(file_get_contents($logPath), 'PRIVATE-DETAIL'), 'Exception was not logged');

@@ -204,6 +204,6 @@ try {
         'exercise' => $exercise ? 'preserve edits, rollback failed fresh, deterministic fresh, SVG cleanup, cascade: OK' : 'not requested',
     ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR) . PHP_EOL;
 } catch (Throwable $exception) {
-    fwrite(STDERR, 'Stage 2 check failed: ' . $exception->getMessage() . PHP_EOL);
+    file_put_contents('php://stderr', 'Stage 2 check failed: ' . $exception->getMessage() . PHP_EOL);
     exit(1);
 }
