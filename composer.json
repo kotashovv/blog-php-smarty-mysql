@@ -1,0 +1,8 @@
+{
+  "name": "abelohost/bento-views",
+  "type": "project",
+  "require": {
+    "php": ">=8.1",
+    "smarty/smarty": "^5.6"
+  }
+}

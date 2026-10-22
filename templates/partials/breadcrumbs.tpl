@@ -1,0 +1,1 @@
+<nav class="breadcrumbs" aria-label="{$ui.breadcrumbs}"><ol>{foreach $breadcrumbs as $crumb}<li>{if !$crumb@last}<a href="{$crumb.url}">{$crumb.label}</a>{else}<span aria-current="page">{$crumb.label}</span>{/if}</li>{/foreach}</ol></nav>
